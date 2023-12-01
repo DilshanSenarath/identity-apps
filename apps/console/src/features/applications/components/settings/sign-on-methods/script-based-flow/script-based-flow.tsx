@@ -404,9 +404,11 @@ export const ScriptBasedFlow: FunctionComponent<AdaptiveScriptsPropsInterface> =
      * @returns
      */
     const resolveAdaptiveScript = (script: string): string | string[] => {
+        console.log(script);
         // Check if there is no script defined and the step count is o.
         // If so, return the default script.
         if (!script && authenticationSequence?.steps?.length === 0) {
+            console.log("No script - Lenght Zero");
             setSourceCode(AdaptiveScriptUtils.getDefaultScript());
             setIsScriptFromTemplate(false);
 
@@ -414,6 +416,7 @@ export const ScriptBasedFlow: FunctionComponent<AdaptiveScriptsPropsInterface> =
         }
 
         if (!script && authenticationSequence?.steps?.length > 0) {
+            console.log("No script - Lenght More Than Zero");
             setSourceCode(AdaptiveScriptUtils.generateScript(authenticationSteps + 1));
             setIsScriptFromTemplate(false);
 
@@ -444,8 +447,7 @@ export const ScriptBasedFlow: FunctionComponent<AdaptiveScriptsPropsInterface> =
         // based on the number of steps.
         if (script
             && AdaptiveScriptUtils.isDefaultScript(internalScript ?? script,
-                internalStepCount ?? authenticationSteps)
-            && AdaptiveScriptUtils.minifyScript(internalScript) !== AdaptiveScriptUtils.minifyScript(sourceCode)) {
+                internalStepCount ?? authenticationSteps)) {
 
             setInternalStepCount(authenticationSteps);
             setSourceCode(AdaptiveScriptUtils.generateScript(authenticationSteps + 1));
@@ -462,8 +464,7 @@ export const ScriptBasedFlow: FunctionComponent<AdaptiveScriptsPropsInterface> =
             setInternalStepCount(authenticationSteps);
 
             // Checks if the editor content is different to the externally provided script.
-            if (AdaptiveScriptUtils.minifyScript(internalScript) !== AdaptiveScriptUtils.minifyScript(script)
-                && AdaptiveScriptUtils.minifyScript(internalScript) !== AdaptiveScriptUtils.minifyScript(sourceCode)) {
+            if (AdaptiveScriptUtils.minifyScript(internalScript) !== AdaptiveScriptUtils.minifyScript(script)) {
                 setSourceCode(internalScript ?? script);
 
                 return;
@@ -1374,6 +1375,7 @@ export const ScriptBasedFlow: FunctionComponent<AdaptiveScriptsPropsInterface> =
                                                 value: string) => {
                                                 setInternalScript(value);
                                                 onScriptChange(value);
+                                                console.log("On Change Editor Update", value);
                                             } }
                                             onFullScreenToggle={ (isFullScreen: boolean) => {
                                                 setIsEditorFullScreen(isFullScreen);
