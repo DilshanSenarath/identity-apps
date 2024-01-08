@@ -487,16 +487,16 @@
                 "enabled": true,
                 "scopes": {
                     "update": [
-                        "internal_config_mgt_update"
+                        "internal_notification_senders_update"
                     ],
                     "delete": [
-                        "internal_config_mgt_delete"
+                        "internal_notification_senders_delete"
                     ],
                     "create": [
-                        "internal_config_mgt_add"
+                        "internal_notification_senders_create"
                     ],
                     "read": [
-                        "internal_config_mgt_view"
+                        "internal_notification_senders_view"
                     ]
                 }
             },
@@ -505,16 +505,16 @@
                 "enabled": true,
                 "scopes": {
                     "update": [
-                        "internal_config_mgt_update"
+                        "internal_notification_senders_update"
                     ],
                     "delete": [
-                        "internal_config_mgt_delete"
+                        "internal_notification_senders_delete"
                     ],
                     "create": [
-                        "internal_config_mgt_add"
+                        "internal_notification_senders_create"
                     ],
                     "read": [
-                        "internal_config_mgt_view"
+                        "internal_notification_senders_view"
                     ]
                 }
             },
@@ -523,16 +523,16 @@
                 "enabled": true,
                 "scopes": {
                     "update": [
-                        "internal_config_mgt_update"
+                        "internal_notification_senders_update"
                     ],
                     "delete": [
-                        "internal_config_mgt_delete"
+                        "internal_notification_senders_delete"
                     ],
                     "create": [
-                        "internal_config_mgt_add"
+                        "internal_notification_senders_create"
                     ],
                     "read": [
-                        "internal_config_mgt_view"
+                        "internal_notification_senders_view"
                     ]
                 }
             },
