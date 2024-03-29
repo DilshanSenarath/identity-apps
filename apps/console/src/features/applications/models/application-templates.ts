@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import { DynamicFieldInterface } from "./dynamic-fields";
 import { MainApplicationInterface } from "../../applications/models/application";
 
 export interface ApplicationTemplateCommonInterface {
@@ -85,9 +86,11 @@ export interface ApplicationTemplateMetadataInterface {
      * Application creation related metadata.
      */
     create: {
+        /**
+         * Dynamic input fields should be rendered in the application create wizard.
+         */
         form: {
-            // TODO: FIx types (Need to define proper type for this with additional attributes)
-            fields: any;
+            fields: DynamicFieldInterface[];
         };
         /**
          * Application creation guide metadata.
