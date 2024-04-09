@@ -34,7 +34,7 @@ import useUIConfig from "@wso2is/admin.core.v1/hooks/use-ui-configs";
 import { applicationConfig } from "@wso2is/admin.extensions.v1";
 import { OrganizationType } from "@wso2is/admin.organizations.v1/constants";
 import { useGetCurrentOrganizationType } from "@wso2is/admin.organizations.v1/hooks/use-get-organization-type";
-import { AlertLevels, TestableComponentInterface } from "@wso2is/core/models";
+import { AlertLevels, IdentifiableComponentInterface, TestableComponentInterface } from "@wso2is/core/models";
 import { addAlert } from "@wso2is/core/store";
 import { I18n } from "@wso2is/i18n";
 import {
@@ -106,7 +106,7 @@ const APPLICATIONS_LIST_SORTING_OPTIONS: DropdownItemProps[] = [
 /**
  * Props for the Applications page.
  */
-type ApplicationsPageInterface = TestableComponentInterface;
+type ApplicationsPageInterface = TestableComponentInterface & IdentifiableComponentInterface;
 
 /**
  * Applications page.
@@ -119,7 +119,8 @@ const ApplicationsPage: FunctionComponent<ApplicationsPageInterface> = (
 ): ReactElement => {
 
     const {
-        [ "data-testid" ]: testId
+        [ "data-testid" ]: testId,
+        [ "data-componentid"]: componentId
     } = props;
 
     const { legacyAuthzRuntime } = useAuthorization();
@@ -619,26 +620,51 @@ const ApplicationsPage: FunctionComponent<ApplicationsPageInterface> = (
         );
     };
 
+    const handleSettingsButton = () => {
+        history.push(AppConstants.getPaths().get("APPLICATIONS_SETTINGS"));
+    };
+
     return (
         <PageLayout
             pageTitle="Applications"
             action={ (organizationType !== OrganizationType.SUBORGANIZATION &&
-                filteredApplicationList?.totalResults > 0) && (
-                <Show
-                    when={ featureConfig?.applications?.scopes?.create }
-                >
-                    <PrimaryButton
-                        onClick={ (): void => {
-                            eventPublisher.publish("application-click-new-application-button");
-                            history.push(AppConstants.getPaths().get("APPLICATION_TEMPLATES"));
-                        } }
-                        data-testid={ `${ testId }-list-layout-add-button` }
-                    >
-                        <Icon name="add" />
-                        { t("applications:list.actions.add") }
-                    </PrimaryButton>
-                </Show>
-            ) }
+                filteredApplicationList?.totalResults > 0) ? (
+                    <>
+                        {/* TODO : Check tenant admin access control */}
+                        <Show when={ AccessControlConstants.APPLICATION_WRITE }>
+                            <Button
+                                data-componentid={ `${ componentId }-applications-settings-button` }
+                                icon="setting"
+                                onClick={ handleSettingsButton }
+                            >
+                            </Button>
+                        </Show>
+                        <Show when={ AccessControlConstants.APPLICATION_WRITE }>
+                            <PrimaryButton
+                                onClick={ (): void => {
+                                    eventPublisher.publish("application-click-new-application-button");
+                                    history.push(AppConstants.getPaths().get("APPLICATION_TEMPLATES"));
+                                } }
+                                data-testid={ `${ testId }-list-layout-add-button` }
+                            >
+                                <Icon name="add" />
+                                { t("applications:list.actions.add") }
+                            </PrimaryButton>
+                        </Show>
+                    </>
+
+                ) : (
+                    // TODO : Check tenant admin access control
+                    <Show when={ AccessControlConstants.APPLICATION_WRITE }>
+                        <Button
+                            data-componentid={ `${ componentId }-applications-settings-button` }
+                            icon="setting"
+                            onClick={ handleSettingsButton }
+                        >
+                        </Button>
+                    </Show>
+
+                )}
             title={ t("console:develop.pages.applications.title") }
             description={ organizationType !== OrganizationType.SUBORGANIZATION
                 ? (
@@ -829,7 +855,8 @@ const ApplicationsPage: FunctionComponent<ApplicationsPageInterface> = (
  * Default props for the component.
  */
 ApplicationsPage.defaultProps = {
-    "data-testid": "applications"
+    "data-testid": "applications",
+    "data-componentid": "applications"
 };
 
 /**

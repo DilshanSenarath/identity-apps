@@ -106,6 +106,7 @@ export const commonConfigReducerInitialState: CommonConfigReducerStateInterface<
             clientCertificates: "",
             createSecret: "",
             createSecretType: "",
+            dcrConfiguration:"",
             deleteSecret: "",
             deleteSecretType: "",
             externalClaims: "",
