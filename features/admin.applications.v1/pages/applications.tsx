@@ -629,33 +629,9 @@ const ApplicationsPage: FunctionComponent<ApplicationsPageInterface> = (
             pageTitle="Applications"
             action={ (organizationType !== OrganizationType.SUBORGANIZATION &&
                 filteredApplicationList?.totalResults > 0) ? (
-                    <>
-                        {/* TODO : Check tenant admin access control */}
-                        <Show when={ AccessControlConstants.APPLICATION_WRITE }>
-                            <Button
-                                data-componentid={ `${ componentId }-applications-settings-button` }
-                                icon="setting"
-                                onClick={ handleSettingsButton }
-                            >
-                            </Button>
-                        </Show>
-                        <Show when={ AccessControlConstants.APPLICATION_WRITE }>
-                            <PrimaryButton
-                                onClick={ (): void => {
-                                    eventPublisher.publish("application-click-new-application-button");
-                                    history.push(AppConstants.getPaths().get("APPLICATION_TEMPLATES"));
-                                } }
-                                data-testid={ `${ testId }-list-layout-add-button` }
-                            >
-                                <Icon name="add" />
-                                { t("applications:list.actions.add") }
-                            </PrimaryButton>
-                        </Show>
-                    </>
-
-                ) : (
-                    // TODO : Check tenant admin access control
-                    <Show when={ AccessControlConstants.APPLICATION_WRITE }>
+                <>
+                    {/* TODO : Check tenant admin access control */}
+                    <Show when={ featureConfig?.applications?.scopes?.create }>
                         <Button
                             data-componentid={ `${ componentId }-applications-settings-button` }
                             icon="setting"
@@ -663,6 +639,31 @@ const ApplicationsPage: FunctionComponent<ApplicationsPageInterface> = (
                         >
                         </Button>
                     </Show>
+                    <Show
+                        when={ featureConfig?.applications?.scopes?.create }
+                    >
+                        <PrimaryButton
+                            onClick={ (): void => {
+                                eventPublisher.publish("application-click-new-application-button");
+                                history.push(AppConstants.getPaths().get("APPLICATION_TEMPLATES"));
+                            } }
+                            data-testid={ `${ testId }-list-layout-add-button` }
+                        >
+                            <Icon name="add" />
+                            { t("applications:list.actions.add") }
+                        </PrimaryButton>
+                    </Show>
+                </>
+            ) : (
+                  // TODO : Check tenant admin access control
+                  <Show when={ featureConfig?.applications?.scopes?.create }>
+                      <Button
+                          data-componentid={ `${ componentId }-applications-settings-button` }
+                          icon="setting"
+                          onClick={ handleSettingsButton }
+                      >
+                      </Button>
+                  </Show>
 
                 )}
             title={ t("console:develop.pages.applications.title") }
