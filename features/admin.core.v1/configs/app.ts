@@ -306,7 +306,7 @@ export class Config {
                 defaultLogoPath: window[ "AppUtils" ]?.getConfig()?.ui?.appLogo?.defaultLogoPath
                     ?? window[ "AppUtils" ]?.getConfig()?.ui?.appLogoPath,
                 defaultWhiteLogoPath: window[ "AppUtils" ]?.getConfig()?.ui?.appLogo?.defaultWhiteLogoPath
-                    ?? window[ "AppUtils" ]?.getConfig()?.ui?.appWhiteLogoPath
+                    ?? window[ "AppUtils" ]?.getConfig()?.ui?.defaultWhiteLogoPath
             },
             appName: window[ "AppUtils" ]?.getConfig()?.ui?.appName,
             appTitle: window[ "AppUtils" ]?.getConfig()?.ui?.appTitle,
@@ -361,6 +361,8 @@ export class Config {
             showAppSwitchButton: window[ "AppUtils" ]?.getConfig()?.ui?.showAppSwitchButton,
             showStatusLabelForNewAuthzRuntimeFeatures:
                 window[ "AppUtils" ]?.getConfig()?.ui?.showStatusLabelForNewAuthzRuntimeFeatures,
+            showSmsOtpPwdRecoveryFeatureStatusChip:
+                window[ "AppUtils" ]?.getConfig()?.ui?.showSmsOtpPwdRecoveryFeatureStatusChip,
             systemAppsIdentifiers: window[ "AppUtils" ]?.getConfig()?.ui?.systemAppsIdentifiers,
             theme: window[ "AppUtils" ]?.getConfig()?.ui?.theme,
             useRoleClaimAsGroupClaim: window[ "AppUtils" ]?.getConfig()?.ui?.useRoleClaimAsGroupClaim
