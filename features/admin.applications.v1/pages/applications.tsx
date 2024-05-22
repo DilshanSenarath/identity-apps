@@ -633,7 +633,7 @@ const ApplicationsPage: FunctionComponent<ApplicationsPageInterface> = (
                         { /* TODO : Check tenant admin access control */ }
                         <Show when={ featureConfig?.applications?.scopes?.create }>
                             <Button
-                                data-componentid={ `${ componentId }-applications-settings-button` }
+                                data-componentid={ `applications-settings-button` }
                                 icon="setting"
                                 onClick={ handleSettingsButton }
                             >
@@ -658,7 +658,7 @@ const ApplicationsPage: FunctionComponent<ApplicationsPageInterface> = (
             // TODO : Check tenant admin access control
                     <Show when={ featureConfig?.applications?.scopes?.create }>
                         <Button
-                            data-componentid={ `${ componentId }-applications-settings-button` }
+                            data-componentid={ `applications-settings-button` }
                             icon="setting"
                             onClick={ handleSettingsButton }
                         >
