@@ -220,7 +220,7 @@ export const EditApplication: FunctionComponent<EditApplicationPropsInterface> =
     const isMyAccount: boolean =
         ApplicationManagementConstants.MY_ACCOUNT_CLIENT_ID === application?.clientId;
     const applicationsUpdateScopes: string[] = featureConfig?.applications?.scopes?.update;
-  
+
     const [ isDisableInProgress, setIsDisableInProgress ] = useState<boolean>(false);
     const [ enableStatus, setEnableStatus ] = useState<boolean>(false);
     const [ showDisableConfirmationModal, setShowDisableConfirmationModal ] = useState<boolean>(false);
@@ -1034,7 +1034,7 @@ export const EditApplication: FunctionComponent<EditApplicationPropsInterface> =
 
                     break;
                 case ApplicationEditTabContentTypes.FORM:
-                    if (tab?.form?.fields && Array.isArray(tab?.form?.fields) && tab?.form?.fields?.length > 0) {
+                    if (tab?.forms && Array.isArray(tab?.forms) && tab?.forms.length > 0) {
                         filteredTabs.push({
                             componentId: tab?.id,
                             "data-tabid": tab?.id,

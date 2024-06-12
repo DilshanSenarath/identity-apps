@@ -28,6 +28,10 @@ export interface DynamicFormInterface {
      * Should the form only submit the fields defined above.
      */
     submitDefinedFieldsOnly?: boolean;
+    /**
+     * API to which the form values should be submitted.
+     */
+    api?: SupportedAPIList;
 }
 
 /**
@@ -67,6 +71,10 @@ export interface DynamicFieldInterface {
      */
     dataComponentId: string;
     /**
+     * Indicates if the field is disabled (Value will not be submitted).
+     */
+    disable?: boolean;
+    /**
      * Array of validation rules for the field's input.
      */
     validations?: ValidationRule[];
@@ -81,23 +89,9 @@ export interface DynamicFieldInterface {
  */
 export interface DynamicFieldMetadataInterface {
     /**
-     * Properties that should automatically submit along with the current property.
+     * Names of the properties that should be templated using the current field value.
      */
-    autoSubmitProperties?: DynamicFieldAutoSubmitPropertyInterface[];
-}
-
-/**
- * Interface for defining an auto-submitting property.
- */
-export interface DynamicFieldAutoSubmitPropertyInterface {
-    /**
-     * The path for the property that should be included in the final form submit payload.
-     */
-    path: string;
-    /**
-     * The value to be assigned to the specified path.
-     */
-    value: any;
+    dependentProperties?: string[];
 }
 
 /**
@@ -139,4 +133,12 @@ export enum ValidationRuleTypes {
     DOMAIN_NAME = "domainName",
     APPLICATION_NAME = "applicationName",
     REQUIRED = "required"
+}
+
+/**
+ * List of supported APIs to which the form values can be submitted.
+ */
+export enum SupportedAPIList {
+    APPLICATION_PATCH = "PATCH:/api/server/v1/applications",
+    APPLICATION_INBOUND_PROTOCOL_PUT = "PUT:/api/server/v1/applications/{application-id}/inbound-protocols/saml"
 }

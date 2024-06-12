@@ -44,6 +44,7 @@ import get from "lodash-es/get";
 import has from "lodash-es/has";
 import pick from "lodash-es/pick";
 import set from "lodash-es/set";
+import unset from "lodash-es/unset";
 import React, { ChangeEvent, FunctionComponent, MouseEvent, ReactElement, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -58,7 +59,7 @@ import useApplicationSharingEligibility from "../../hooks/use-application-sharin
 import useDynamicFieldValidations from "../../hooks/use-dynamic-field-validation";
 import { ApplicationListItemInterface, MainApplicationInterface, URLFragmentTypes } from "../../models";
 import { ApplicationTemplateListInterface } from "../../models/application-templates";
-import { DynamicFieldAutoSubmitPropertyInterface, DynamicFieldInterface } from "../../models/dynamic-fields";
+import { DynamicFieldInterface } from "../../models/dynamic-fields";
 import buildCallBackUrlsWithRegExp from "../../utils/build-callback-urls-with-regexp";
 import { ApplicationShareModal } from "../modals/application-share-modal";
 import "./application-create-wizard.scss";
@@ -331,13 +332,26 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
                 }
             }
 
-            if (field?.meta?.autoSubmitProperties
-                && Array.isArray(field?.meta?.autoSubmitProperties)
-                && field?.meta?.autoSubmitProperties?.length > 0) {
-                field.meta.autoSubmitProperties.forEach(
-                    (property: DynamicFieldAutoSubmitPropertyInterface) =>
-                        set(formValues, property?.path, property?.value)
-                );
+            if (field?.meta?.dependentProperties
+                && Array.isArray(field?.meta?.dependentProperties)
+                && field?.meta?.dependentProperties?.length > 0) {
+                const fieldValue: string = get(formValues, field?.name);
+
+                if (typeof fieldValue === "string") {
+                    field.meta.dependentProperties.forEach(
+                        (property: string) => {
+                            const propertyValue: string = get(formValues, property);
+
+                            if (propertyValue && typeof propertyValue === "string") {
+                                set(formValues, property, propertyValue.replace(`\${${field?.name}}`, fieldValue));
+                            }
+                        }
+                    );
+                }
+            }
+
+            if (field?.disable) {
+                unset(formValues, field?.name);
             }
         });
 
