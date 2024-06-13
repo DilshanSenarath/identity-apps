@@ -293,9 +293,12 @@ export const ConnectorEditPage: FunctionComponent<ConnectorEditPageInterface> = 
             });
         }
 
+        // Special case for password recovery notification based enable since the connector state
+        // depends on the state of recovery options.
         if (
             serverConfigurationConfig.connectorToggleName[ connector?.name ] &&
-            serverConfigurationConfig.autoEnableConnectorToggleProperty
+            serverConfigurationConfig.autoEnableConnectorToggleProperty &&
+            connector?.name !== "account-recovery"
         ) {
             data.properties.push({
                 name: GovernanceConnectorUtils.decodeConnectorPropertyName(
