@@ -220,7 +220,7 @@ export const EditApplication: FunctionComponent<EditApplicationPropsInterface> =
     const isMyAccount: boolean =
         ApplicationManagementConstants.MY_ACCOUNT_CLIENT_ID === application?.clientId;
     const applicationsUpdateScopes: string[] = featureConfig?.applications?.scopes?.update;
-  
+
     const [ isDisableInProgress, setIsDisableInProgress ] = useState<boolean>(false);
     const [ enableStatus, setEnableStatus ] = useState<boolean>(false);
     const [ showDisableConfirmationModal, setShowDisableConfirmationModal ] = useState<boolean>(false);
@@ -1103,6 +1103,8 @@ export const EditApplication: FunctionComponent<EditApplicationPropsInterface> =
                 window.location.hash = TAB_URL_HASH_FRAGMENT + ApplicationTabIDs.SIGN_IN_METHODS;
             } else if (urlSearchParams.get(ApplicationManagementConstants.IS_PROTOCOL) === "true") {
                 window.location.hash = TAB_URL_HASH_FRAGMENT + ApplicationTabIDs.PROTOCOL;
+            }  else if (urlSearchParams.get(ApplicationManagementConstants.IS_ROLES) === "true") {
+                window.location.hash = TAB_URL_HASH_FRAGMENT + ApplicationTabIDs.APPLICATION_ROLES;
             }
         }
     },[ urlSearchParams ]);
