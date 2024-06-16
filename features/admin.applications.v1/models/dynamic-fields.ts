@@ -75,6 +75,14 @@ export interface DynamicFieldInterface {
      */
     disable?: boolean;
     /**
+     * Indicates whether the field is read only.
+     */
+    readOnly?: boolean;
+    /**
+     * Indicates whether the field is hidden.
+     */
+    hidden?: boolean;
+    /**
      * Array of validation rules for the field's input.
      */
     validations?: ValidationRule[];
@@ -92,6 +100,10 @@ export interface DynamicFieldMetadataInterface {
      * Names of the properties that should be templated using the current field value.
      */
     dependentProperties?: string[];
+    /**
+     * Whether the current field value should be a generated value.
+     */
+    generator: "uuid"
 }
 
 /**
@@ -141,4 +153,11 @@ export enum ValidationRuleTypes {
 export enum SupportedAPIList {
     APPLICATION_PATCH = "PATCH:/api/server/v1/applications",
     APPLICATION_SAML_INBOUND_PROTOCOL_PUT = "PUT:/api/server/v1/applications/{application-id}/inbound-protocols/saml"
+}
+
+/**
+ * List of field value generators.
+ */
+export enum FieldValueGenerators {
+    UUID = "uuid"
 }

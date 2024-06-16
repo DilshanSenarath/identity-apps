@@ -532,7 +532,7 @@ const ApplicationEditPage: FunctionComponent<ApplicationEditPageInterface> = (
                                                 here
                                             </Link>
                                             {
-                                                " sync the configurations."
+                                                " to sync the configurations."
                                             }
                                         </>)
                                     }

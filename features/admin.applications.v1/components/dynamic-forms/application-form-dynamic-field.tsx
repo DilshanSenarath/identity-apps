@@ -50,6 +50,10 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
     const { ["data-componentid"]: componentId, field, form: _form, readOnly, ...rest } = props;
 
     const getDynamicFieldAdapter = (type: DynamicInputFieldTypes): ReactElement => {
+        if (field?.hidden) {
+            return null;
+        }
+
         switch (type) {
             case DynamicInputFieldTypes.CHECKBOX:
                 return (
@@ -65,7 +69,7 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         label={ field?.label }
                         placeholder={ field?.placeholder }
                         component={ CheckboxFieldAdapter }
-                        disabled={ readOnly }
+                        disabled={ readOnly || field?.readOnly }
                         required={ field?.required }
                     />
                 );
@@ -83,7 +87,7 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         label={ field?.label }
                         placeholder={ field?.placeholder }
                         component={ TextFieldAdapter }
-                        readOnly={ readOnly }
+                        readOnly={ readOnly || field?.readOnly }
                         required={ field?.required }
                     />
                 );
@@ -101,7 +105,7 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         label={ field?.label }
                         placeholder={ field?.placeholder }
                         component={ TextFieldAdapter }
-                        readOnly={ readOnly }
+                        readOnly={ readOnly || field?.readOnly }
                         rows={ 3 }
                         multiline={ true }
                         required={ field?.required }
@@ -121,7 +125,7 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         label={ field?.label }
                         placeholder={ field?.placeholder }
                         component={ TextFieldAdapter }
-                        readOnly={ readOnly }
+                        readOnly={ readOnly || field?.readOnly }
                         required={ field?.required }
                     />
                 );

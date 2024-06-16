@@ -50,6 +50,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
 import { Grid, ModalProps } from "semantic-ui-react";
+import { v4 as uuidv4 } from "uuid";
 import { ApplicationFormDynamicField } from "./application-form-dynamic-field";
 import { createApplication, useApplicationList } from "../../api";
 import useGetApplicationTemplate from "../../api/use-get-application-template";
@@ -59,7 +60,7 @@ import useApplicationSharingEligibility from "../../hooks/use-application-sharin
 import useDynamicFieldValidations from "../../hooks/use-dynamic-field-validation";
 import { ApplicationListItemInterface, MainApplicationInterface, URLFragmentTypes } from "../../models";
 import { ApplicationTemplateListInterface } from "../../models/application-templates";
-import { DynamicFieldInterface } from "../../models/dynamic-fields";
+import { DynamicFieldInterface, FieldValueGenerators } from "../../models/dynamic-fields";
 import buildCallBackUrlsWithRegExp from "../../utils/build-callback-urls-with-regexp";
 import { ApplicationShareModal } from "../modals/application-share-modal";
 import "./application-create-wizard.scss";
@@ -330,6 +331,10 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
                 if (initialValue && typeof initialValue === "string") {
                     set(formValues, field?.name, "");
                 }
+            }
+
+            if (field?.meta?.generator === FieldValueGenerators.UUID) {
+                set(formValues, field?.name, uuidv4());
             }
 
             if (field?.meta?.dependentProperties
