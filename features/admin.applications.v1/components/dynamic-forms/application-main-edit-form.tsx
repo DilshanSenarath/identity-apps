@@ -21,7 +21,7 @@ import useUIConfig from "@wso2is/admin.core.v1/hooks/use-ui-configs";
 import { hasRequiredScopes } from "@wso2is/core/helpers";
 import { AlertLevels, IdentifiableComponentInterface } from "@wso2is/core/models";
 import { addAlert } from "@wso2is/core/store";
-import { FinalForm, FormRenderProps, MutableState, Tools } from "@wso2is/form";
+import { FinalForm, FormApi, FormRenderProps, MutableState, Tools } from "@wso2is/form";
 import {
     ContentLoader,
     PrimaryButton
@@ -112,7 +112,11 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
      *
      * @param values - Submission values from the form fields.
      */
-    const onSubmit = (values: ApplicationInterface): void => {
+    const onSubmit = (values: ApplicationInterface, form: FormApi): void => {
+        if (!form?.getState()?.dirty) {
+            return;
+        }
+
         setIsSubmitting(true);
         const formValues: ApplicationInterface = cloneDeep(values);
 

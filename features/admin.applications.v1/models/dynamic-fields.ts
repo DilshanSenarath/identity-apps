@@ -140,5 +140,5 @@ export enum ValidationRuleTypes {
  */
 export enum SupportedAPIList {
     APPLICATION_PATCH = "PATCH:/api/server/v1/applications",
-    APPLICATION_INBOUND_PROTOCOL_PUT = "PUT:/api/server/v1/applications/{application-id}/inbound-protocols/saml"
+    APPLICATION_SAML_INBOUND_PROTOCOL_PUT = "PUT:/api/server/v1/applications/{application-id}/inbound-protocols/saml"
 }

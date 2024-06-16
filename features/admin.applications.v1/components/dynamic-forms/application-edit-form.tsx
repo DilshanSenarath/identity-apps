@@ -96,7 +96,7 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
                             }
                         />
                     );
-                case SupportedAPIList.APPLICATION_INBOUND_PROTOCOL_PUT:
+                case SupportedAPIList.APPLICATION_SAML_INBOUND_PROTOCOL_PUT:
                     return (
                         <ApplicationInboundProtocolEditForm
                             formMetadata={ form }

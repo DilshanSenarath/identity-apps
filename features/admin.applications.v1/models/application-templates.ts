@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import { Schema } from "ajv";
 import { MainApplicationInterface } from "./application";
 import { DynamicFormInterface } from "./dynamic-fields";
 
@@ -76,6 +77,10 @@ export interface ApplicationTemplateInterface extends ApplicationTemplateCommonI
      * Create form payload parameters.
      */
     payload: MainApplicationInterface;
+    /**
+     * Data validation schema for application API.
+     */
+    schema?: Schema
 }
 
 /**

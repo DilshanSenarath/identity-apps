@@ -32,7 +32,7 @@ import get from "lodash-es/get";
 import has from "lodash-es/has";
 import set from "lodash-es/set";
 import unset from "lodash-es/unset";
-import React, { FunctionComponent, MouseEvent, ReactElement, useEffect, useState } from "react";
+import React, { FunctionComponent, MouseEvent, ReactElement, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
@@ -40,6 +40,7 @@ import { Grid } from "semantic-ui-react";
 import { ApplicationFormDynamicField } from "./application-form-dynamic-field";
 import { updateAuthProtocolConfig } from "../../api";
 import useGetApplicationInboundConfigs from "../../api/use-get-application-inbound-configs";
+import useGetApplicationTemplate from "../../api/use-get-application-template";
 import {
     ApplicationInterface,
     SAML2ConfigurationInterface,
@@ -102,6 +103,11 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
     } = props;
 
     const {
+        data: templateData,
+        isLoading: isTemplateDataFetchRequestLoading,
+        error: templateDataFetchRequestError
+    } = useGetApplicationTemplate("salesforce");
+    const {
         data: SAML2Configurations,
         error: SAML2ConfigurationFetchError,
         isLoading: isLoadingSAML2Configuration
@@ -112,6 +118,101 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
     const { UIConfig } = useUIConfig();
     const allowedScopes: string = useSelector((state: AppState) => state?.auth?.allowedScopes);
     const [ isSubmitting, setIsSubmitting ] = useState(false);
+
+    /**
+     * Prepare the initial values before assigning them to the form fields.
+     *
+     * @param application - application data.
+     * @returns Moderated initial values.
+     */
+    const moderateInitialValues = (samlConfig: SAML2ServiceProviderInterface): SAML2ServiceProviderInterface => {
+        const templateToRegex = (template: string): RegExp => {
+            // Escape special regex characters in the template
+            const escapedTemplate: string = template.replace(/[-\\^$*+?.,()|[\]{}]/g, "\\$&");
+
+            // Replace ${variable} with a named capturing group pattern
+            const regexString: string = escapedTemplate.replace(/\\\$\\\{([^}]+)\\\}/g, "(?<$1>[^/]+)");
+
+            // Create and return the regular expression object
+            return new RegExp("^" + regexString + "$");
+        };
+
+        formMetadata?.fields?.forEach((field: DynamicFieldInterface) => {
+            if (field?.meta?.dependentProperties
+                && Array.isArray(field?.meta?.dependentProperties)
+                && field?.meta?.dependentProperties?.length > 0
+            ) {
+                for(const path of field.meta.dependentProperties) {
+                    const dependentPropertyValue: string = get(samlConfig, path);
+                    const templateValue: string = get(
+                        templateData?.payload?.inboundProtocolConfiguration?.saml?.manualConfiguration, path);
+
+                    if (typeof dependentPropertyValue === "string"
+                        && templateValue && typeof templateValue === "string") {
+                        const regex: RegExp = templateToRegex(templateValue);
+
+                        const match: RegExpMatchArray = dependentPropertyValue.match(regex);
+
+                        if (match?.groups?.[field?.name]) {
+                            if (samlConfig[field?.name]) {
+                                if (samlConfig[field?.name] === match?.groups?.[field?.name]) {
+                                    continue;
+                                }
+                            } else {
+                                samlConfig[field?.name] = match?.groups?.[field?.name];
+
+                                continue;
+                            }
+                        }
+
+                        samlConfig[field?.name] = "";
+
+                        break;
+                    }
+                }
+            }
+        });
+
+        return samlConfig;
+    };
+
+    const initialValues: SAML2ServiceProviderInterface = useMemo(
+        () => {
+            if (!SAML2Configurations && !templateData) {
+                return null;
+            }
+
+            return moderateInitialValues(cloneDeep(SAML2Configurations) as SAML2ServiceProviderInterface);
+        },
+        [ SAML2Configurations, templateData ]
+    );
+
+    /**
+     * Handle errors that occur during the application template data fetch request.
+     */
+    useEffect(() => {
+        if (!templateDataFetchRequestError) {
+            return;
+        }
+
+        if (templateDataFetchRequestError?.response?.data?.description) {
+            dispatch(addAlert({
+                description: templateDataFetchRequestError?.response?.data?.description,
+                level: AlertLevels.ERROR,
+                message: t("applications:notifications.fetchTemplate.error.message")
+            }));
+
+            return;
+        }
+
+        dispatch(addAlert({
+            description: t("applications:notifications.fetchTemplate" +
+                ".genericError.description"),
+            level: AlertLevels.ERROR,
+            message: t("applications:notifications." +
+                "fetchTemplate.genericError.message")
+        }));
+    }, [ templateDataFetchRequestError ]);
 
     /**
      * Handle errors that occur during the application template meta data fetch request.
@@ -160,7 +261,7 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
          */
         formMetadata?.fields?.forEach((field: DynamicFieldInterface) => {
             if (!has(formValues, field?.name)) {
-                const initialValue: any = get(SAML2Configurations, field?.name);
+                const initialValue: any = get(initialValues, field?.name);
 
                 if (initialValue && typeof initialValue === "string") {
                     set(formValues, field?.name, "");
@@ -175,6 +276,11 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
                 if (typeof fieldValue === "string") {
                     field.meta.dependentProperties.forEach(
                         (property: string) => {
+                            if (!get(formValues, property).includes(`\${${ field?.name }}`)) {
+                                set(formValues, property, get(
+                                    templateData?.payload?.inboundProtocolConfiguration?.saml?.manualConfiguration,
+                                    property));
+                            }
                             const propertyValue: string = get(formValues, property);
 
                             if (propertyValue && typeof propertyValue === "string") {
@@ -227,11 +333,11 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
         }).finally(() => setIsSubmitting(false));
     };
 
-    return isLoading || isLoadingSAML2Configuration
+    return isLoading || isLoadingSAML2Configuration || isTemplateDataFetchRequestLoading
         ? <ContentLoader inline="centered" active/>
         : (
             <FinalForm
-                initialValues={ SAML2Configurations }
+                initialValues={ initialValues }
                 keepDirtyOnReinitialize
                 onSubmit={ onSubmit }
                 mutators={ {
