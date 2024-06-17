@@ -19,6 +19,8 @@
 import { IdentifiableComponentInterface } from "@wso2is/core/models";
 import { CheckboxFieldAdapter, FinalFormField, FormApi, TextFieldAdapter } from "@wso2is/form";
 import React, { FunctionComponent, PropsWithChildren, ReactElement } from "react";
+import ApplicationCertificateAdapter from "./custom-fields/application-certificate-adapter";
+import { ApplicationInterface } from "../../models";
 import { DynamicFieldInterface, DynamicInputFieldTypes } from "../../models/dynamic-fields";
 
 /**
@@ -37,6 +39,14 @@ export interface ApplicationFormDynamicFieldPropsInterface extends IdentifiableC
      * Whether the form field is read only or not.
      */
     readOnly?: boolean;
+    /**
+     * Data of the current application.
+     */
+    application?: ApplicationInterface;
+    /**
+     * Callback to trigger when the application update occurs.
+     */
+    onApplicationUpdate?: (id: string) => void;
 }
 
 /**
@@ -47,13 +57,16 @@ export interface ApplicationFormDynamicFieldPropsInterface extends IdentifiableC
 export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
     ApplicationFormDynamicFieldPropsInterface
 >> = (props: PropsWithChildren<ApplicationFormDynamicFieldPropsInterface>): ReactElement => {
-    const { ["data-componentid"]: componentId, field, form: _form, readOnly, ...rest } = props;
+    const {
+        field,
+        form: _form,
+        readOnly,
+        application,
+        onApplicationUpdate,
+        ["data-componentid"]: componentId, ...rest
+    } = props;
 
     const getDynamicFieldAdapter = (type: DynamicInputFieldTypes): ReactElement => {
-        if (field?.hidden) {
-            return null;
-        }
-
         switch (type) {
             case DynamicInputFieldTypes.CHECKBOX:
                 return (
@@ -71,6 +84,7 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         component={ CheckboxFieldAdapter }
                         disabled={ readOnly || field?.readOnly }
                         required={ field?.required }
+                        hint={ field?.helperText }
                     />
                 );
             case DynamicInputFieldTypes.TEXT:
@@ -89,6 +103,7 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         component={ TextFieldAdapter }
                         readOnly={ readOnly || field?.readOnly }
                         required={ field?.required }
+                        helperText={ field?.helperText }
                     />
                 );
             case DynamicInputFieldTypes.TEXTAREA:
@@ -109,6 +124,24 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         rows={ 3 }
                         multiline={ true }
                         required={ field?.required }
+                        helperText={ field?.helperText }
+                    />
+                );
+            case DynamicInputFieldTypes.APPLICATION_CERTIFICATE:
+                if (!application || !onApplicationUpdate) {
+                    return null;
+                }
+
+                return (
+                    <FinalFormField
+                        name={ field?.name }
+                        component={ ApplicationCertificateAdapter }
+                        protocol={ field?.meta?.customFieldProps?.protocol }
+                        application={ application }
+                        onApplicationUpdate={ onApplicationUpdate }
+                        hideJWKS={ field?.meta?.customFieldProps?.hideJWKS }
+                        required={ field?.required }
+                        readOnly={ readOnly || field?.readOnly }
                     />
                 );
             default:
@@ -127,6 +160,7 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         component={ TextFieldAdapter }
                         readOnly={ readOnly || field?.readOnly }
                         required={ field?.required }
+                        helperText={ field?.helperText }
                     />
                 );
         }

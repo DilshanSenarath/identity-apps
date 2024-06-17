@@ -261,15 +261,15 @@ export const ApplicationSyncWizard: FunctionComponent<ApplicationSyncWizardProps
     }, [ application, SAML2Configurations ]);
 
     const applicationOutdateStatus: boolean = useMemo(() => {
-        let status: boolean = false;
+        let status: boolean = true;
 
         if (initialValues && validateSchema) {
             status = validateSchema(initialValues);
         }
 
-        onApplicationOutdateStatusChange(status);
+        onApplicationOutdateStatusChange(!status);
 
-        return status;
+        return !status;
     }, [ initialValues, validateSchema ]);
 
     const formData: {
@@ -320,7 +320,7 @@ export const ApplicationSyncWizard: FunctionComponent<ApplicationSyncWizardProps
 
                     const matches: string[] = value.match(placeholderRegex) || [];
 
-                    matches.forEach((match: string) => fields.add(match));
+                    matches.forEach((match: string) => fields.add(match.substring(2, match.length - 1)));
                 }
 
                 set(formInitialData, lodashPath, value);
@@ -390,7 +390,7 @@ export const ApplicationSyncWizard: FunctionComponent<ApplicationSyncWizardProps
                     updateAuthProtocolConfig<SAML2ConfigurationInterface>(
                         applicationId,
                         {
-                            manualConfiguration: data?.inboundProtocolConfiguration?.saml?.manualConfiguration
+                            manualConfiguration: applicationInboundProtocolData
                         },
                         SupportedAuthProtocolTypes.SAML
                     ).then(() => {
@@ -485,7 +485,7 @@ export const ApplicationSyncWizard: FunctionComponent<ApplicationSyncWizardProps
 
     return (
         <ModalWithSidePanel
-            open={ showWizard && formData?.fields?.length > 0 && !formData?.formInitialData }
+            open={ showWizard && formData?.fields?.length > 0 && !!formData?.formInitialData }
             className="wizard application-sync-wizard"
             dimmer="blurring"
             closeOnDimmerClick={ false }

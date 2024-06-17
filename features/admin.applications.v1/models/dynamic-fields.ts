@@ -67,6 +67,10 @@ export interface DynamicFieldInterface {
      */
     placeholder: string;
     /**
+     * Helper text for the input field.
+     */
+    helperText: string;
+    /**
      * The data component id for the input field.
      */
     dataComponentId: string;
@@ -101,9 +105,21 @@ export interface DynamicFieldMetadataInterface {
      */
     dependentProperties?: string[];
     /**
+     * Names of placeholder strings included as templated strings in the current field.
+     */
+    templatedPlaceholders?: string[];
+    /**
+     * Names of the properties that should be templated using the current field value.
+     */
+    dependent?: string[];
+    /**
      * Whether the current field value should be a generated value.
      */
     generator: "uuid"
+    /**
+     * Custom props need to be provided into the field component.
+     */
+    customFieldProps: Record<string, any>
 }
 
 /**
@@ -121,7 +137,11 @@ export enum DynamicInputFieldTypes {
     /**
      * Text Area.
      */
-    TEXTAREA = "textarea"
+    TEXTAREA = "textarea",
+    /**
+     * Application certificate field.
+     */
+    APPLICATION_CERTIFICATE = "application-certificate"
 }
 
 /**

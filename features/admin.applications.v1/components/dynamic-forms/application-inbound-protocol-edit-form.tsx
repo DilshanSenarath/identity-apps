@@ -131,7 +131,7 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
             const escapedTemplate: string = template.replace(/[-\\^$*+?.,()|[\]{}]/g, "\\$&");
 
             // Replace ${variable} with a named capturing group pattern
-            const regexString: string = escapedTemplate.replace(/\\\$\\\{([^}]+)\\\}/g, "(?<$1>[^/]+)");
+            const regexString: string = escapedTemplate.replace(/\\\$\\\{([^}]+)\\\}/g, "(?<$1>.+)");
 
             // Create and return the regular expression object
             return new RegExp("^" + regexString + "$");
@@ -163,11 +163,11 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
 
                                 continue;
                             }
+
+                            samlConfig[field?.name] = "";
+
+                            break;
                         }
-
-                        samlConfig[field?.name] = "";
-
-                        break;
                     }
                 }
             }
@@ -363,6 +363,10 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
                             <Grid>
                                 { formMetadata?.fields?.map(
                                     (field: DynamicFieldInterface) => {
+                                        if (field?.hidden) {
+                                            return null;
+                                        }
+
                                         return (
                                             <Grid.Row
                                                 key={ field?.id }

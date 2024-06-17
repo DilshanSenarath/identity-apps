@@ -120,6 +120,8 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
 
     const isClientSecretHashEnabled: boolean = useSelector((state: AppState) =>
         state?.config?.ui?.isClientSecretHashEnabled);
+    const tenantDomain: string = useSelector((state: AppState) => state?.auth?.tenantDomain);
+    const clientOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.clientOrigin);
 
     const eventPublisher: EventPublisher = EventPublisher.getInstance();
 
@@ -311,6 +313,17 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
         document.getElementById("notification-div")?.scrollIntoView({ behavior: "smooth" });
     };
 
+    const getTemplatedValues = (property: string): string => {
+        switch(property) {
+            case "tenantDomain":
+                return tenantDomain;
+            case "clientOrigin":
+                return clientOrigin;
+            default:
+                return "";
+        }
+    };
+
     /**
      * Callback function triggered when clicking the form submit button.
      *
@@ -355,6 +368,32 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
                 }
             }
 
+            if (field?.meta?.templatedPlaceholders
+                && Array.isArray(field?.meta?.templatedPlaceholders)
+                && field?.meta?.templatedPlaceholders?.length > 0) {
+                let fieldValue: string = get(formValues, field?.name);
+
+                if (typeof fieldValue === "string") {
+                    field.meta.templatedPlaceholders.forEach(
+                        (property: string) => {
+                            let propertyValue: string = get(formValues, property);
+
+                            if (!propertyValue) {
+                                propertyValue = getTemplatedValues(property);
+                            }
+
+                            if (propertyValue && typeof propertyValue === "string") {
+                                fieldValue = fieldValue.replace(`\${${property}}`, propertyValue);
+                            }
+                        }
+                    );
+
+                    set(formValues, field?.name, fieldValue);
+                }
+            }
+        });
+
+        templateMetadata?.create?.form?.fields?.forEach((field: DynamicFieldInterface) => {
             if (field?.disable) {
                 unset(formValues, field?.name);
             }
@@ -547,6 +586,10 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
                                                     <Grid>
                                                         { templateMetadata?.create?.form?.fields.map(
                                                             (field: DynamicFieldInterface) => {
+                                                                if (field?.hidden) {
+                                                                    return null;
+                                                                }
+
                                                                 return (
                                                                     <Grid.Row
                                                                         key={ field?.id }

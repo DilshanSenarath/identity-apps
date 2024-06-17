@@ -266,6 +266,8 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
                                                                 allowedScopes
                                                             )
                                                         }
+                                                        application={ application }
+                                                        onApplicationUpdate={ onUpdate }
                                                     />
                                                 </Grid.Column>
                                             </Grid.Row>
