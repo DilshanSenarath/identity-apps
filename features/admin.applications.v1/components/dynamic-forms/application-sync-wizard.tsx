@@ -272,6 +272,105 @@ export const ApplicationSyncWizard: FunctionComponent<ApplicationSyncWizardProps
         return !status;
     }, [ initialValues, validateSchema ]);
 
+    const handelSyncResult = (isError: boolean, error?: AxiosError) => {
+        if (!isError) {
+            dispatch(addAlert({
+                description: t("applications:notifications.syncApplication.success" +
+                    ".description"),
+                level: AlertLevels.SUCCESS,
+                message: t("applications:notifications.syncApplication.success.message")
+            }));
+
+            return;
+        }
+
+        if (error?.response?.data?.description) {
+            dispatch(addAlert({
+                description: error.response.data.description,
+                level: AlertLevels.ERROR,
+                message: t("applications:notifications.syncApplication.error" +
+                    ".message")
+            }));
+
+            return;
+        }
+
+        dispatch(addAlert({
+            description: t("applications:notifications.syncApplication" +
+                ".genericError.description"),
+            level: AlertLevels.ERROR,
+            message: t("applications:notifications.syncApplication.genericError" +
+                ".message")
+        }));
+    };
+
+    const syncOutdatedApplication = (data: Partial<MainApplicationInterface>) => {
+        const updateMainApplicationData = (
+            data: Partial<ApplicationInterface>
+        ): Promise<void | ApplicationInterface> => {
+            if (Object.keys(data).length === 0) {
+                return Promise.resolve();
+            }
+
+            return updateApplicationDetails(data);
+        };
+
+        if (!data) {
+            return;
+        }
+
+        setIsSyncing(true);
+
+        // Moderate Values to match API restrictions.
+        if (data?.inboundProtocolConfiguration?.oidc?.callbackURLs) {
+            data.inboundProtocolConfiguration.oidc.callbackURLs = buildCallBackUrlsWithRegExp(
+                data.inboundProtocolConfiguration.oidc.callbackURLs
+            );
+        }
+
+        const applicationData: Partial<ApplicationInterface> = omit(data, [ "inboundProtocolConfiguration" ]);
+        const applicationInboundProtocolData: SAML2ServiceProviderInterface = merge(
+            initialValues?.inboundProtocolConfiguration?.saml?.manualConfiguration,
+            data?.inboundProtocolConfiguration?.saml?.manualConfiguration
+        );
+
+        updateMainApplicationData(applicationData)
+            .then((response: ApplicationInterface) => {
+                const shouldUpdateInboundProtocol: boolean =
+                    applicationInboundProtocolData && Object.keys(applicationInboundProtocolData).length > 0;
+
+                if (response) {
+                    mutateApplicationGetRequest();
+
+                    if (!shouldUpdateInboundProtocol) {
+                        handelSyncResult(false);
+                    }
+                }
+
+                if (shouldUpdateInboundProtocol) {
+                    updateAuthProtocolConfig<SAML2ConfigurationInterface>(
+                        applicationId,
+                        {
+                            manualConfiguration: applicationInboundProtocolData
+                        },
+                        SupportedAuthProtocolTypes.SAML
+                    ).then(() => {
+                        handelSyncResult(false);
+                        mutateSAML2ConfigData();
+                    }).catch((error: AxiosError) => {
+                        handelSyncResult(true, error);
+                    });
+                }
+            })
+            .catch((error: AxiosError) => {
+                handelSyncResult(true, error);
+            })
+            .finally(() => {
+                setIsSyncing(false);
+                onClose();
+            });
+    };
+
     const formData: {
         fields: DynamicFieldInterface[],
         formInitialData: Partial<MainApplicationInterface>
@@ -342,105 +441,6 @@ export const ApplicationSyncWizard: FunctionComponent<ApplicationSyncWizardProps
             formInitialData
         };
     }, [ showWizard ]);
-
-    const syncOutdatedApplication = (data: Partial<MainApplicationInterface>) => {
-        const updateMainApplicationData = (
-            data: Partial<ApplicationInterface>
-        ): Promise<void | ApplicationInterface> => {
-            if (Object.keys(data).length === 0) {
-                return Promise.resolve();
-            }
-
-            return updateApplicationDetails(data);
-        };
-
-        if (!data) {
-            return;
-        }
-
-        setIsSyncing(true);
-
-        // Moderate Values to match API restrictions.
-        if (data?.inboundProtocolConfiguration?.oidc?.callbackURLs) {
-            data.inboundProtocolConfiguration.oidc.callbackURLs = buildCallBackUrlsWithRegExp(
-                data.inboundProtocolConfiguration.oidc.callbackURLs
-            );
-        }
-
-        const applicationData: Partial<ApplicationInterface> = omit(data, [ "inboundProtocolConfiguration" ]);
-        const applicationInboundProtocolData: SAML2ServiceProviderInterface = merge(
-            initialValues?.inboundProtocolConfiguration?.saml?.manualConfiguration,
-            data?.inboundProtocolConfiguration?.saml?.manualConfiguration
-        );
-
-        updateMainApplicationData(applicationData)
-            .then((response: ApplicationInterface) => {
-                const shouldUpdateInboundProtocol: boolean =
-                    applicationInboundProtocolData && Object.keys(applicationInboundProtocolData).length > 0;
-
-                if (response) {
-                    mutateApplicationGetRequest();
-
-                    if (!shouldUpdateInboundProtocol) {
-                        handelSyncResult(false);
-                    }
-                }
-
-                if (shouldUpdateInboundProtocol) {
-                    updateAuthProtocolConfig<SAML2ConfigurationInterface>(
-                        applicationId,
-                        {
-                            manualConfiguration: applicationInboundProtocolData
-                        },
-                        SupportedAuthProtocolTypes.SAML
-                    ).then(() => {
-                        handelSyncResult(false);
-                        mutateSAML2ConfigData();
-                    }).catch((error: AxiosError) => {
-                        handelSyncResult(true, error);
-                    });
-                }
-            })
-            .catch((error: AxiosError) => {
-                handelSyncResult(true, error);
-            })
-            .finally(() => {
-                setIsSyncing(false);
-                onClose();
-            });
-    };
-
-    const handelSyncResult = (isError: boolean, error?: AxiosError) => {
-        if (!isError) {
-            dispatch(addAlert({
-                description: t("applications:notifications.syncApplication.success" +
-                    ".description"),
-                level: AlertLevels.SUCCESS,
-                message: t("applications:notifications.syncApplication.success.message")
-            }));
-
-            return;
-        }
-
-        if (error?.response?.data?.description) {
-            dispatch(addAlert({
-                description: error.response.data.description,
-                level: AlertLevels.ERROR,
-                message: t("applications:notifications.syncApplication.error" +
-                    ".message")
-            }));
-
-            return;
-        }
-
-        dispatch(addAlert({
-            description: t("applications:notifications.syncApplication" +
-                ".genericError.description"),
-            level: AlertLevels.ERROR,
-            message: t("applications:notifications.syncApplication.genericError" +
-                ".message")
-        }));
-    };
 
     /**
      * Callback function triggered when clicking the form sync button.

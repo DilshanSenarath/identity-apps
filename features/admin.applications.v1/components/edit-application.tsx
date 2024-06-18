@@ -716,6 +716,7 @@ export const EditApplication: FunctionComponent<EditApplicationPropsInterface> =
     const MarkdownGuideTabPane = (guideContent: string): ReactElement => (
         <ResourceTab.Pane controlledSegmentation>
             <MarkdownGuide
+                applicationId={ application?.id }
                 content={ guideContent }
             />
         </ResourceTab.Pane>

@@ -29,7 +29,6 @@ import {
 import { AxiosError } from "axios";
 import cloneDeep from "lodash-es/cloneDeep";
 import get from "lodash-es/get";
-import has from "lodash-es/has";
 import pick from "lodash-es/pick";
 import set from "lodash-es/set";
 import unset from "lodash-es/unset";
@@ -120,18 +119,25 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
         setIsSubmitting(true);
         const formValues: ApplicationInterface = cloneDeep(values);
 
+        formMetadata?.fields?.forEach((field: DynamicFieldInterface) => {
+            if (!form?.getFieldState(field?.name)?.dirty) {
+                unset(formValues, field?.name);
+            }
+        });
+
         /**
          * Make sure that cleared text fields are set to an empty string.
          * Additionally, include the auto-submit properties in the form submission.
          */
         formMetadata?.fields?.forEach((field: DynamicFieldInterface) => {
-            if (!has(formValues, field?.name)) {
-                const initialValue: any = get(application, field?.name);
+            // TODO: Need to modify this. Conflict with above logic.
+            // if (!has(formValues, field?.name)) {
+            //     const initialValue: any = get(application, field?.name);
 
-                if (initialValue && typeof initialValue === "string") {
-                    set(formValues, field?.name, "");
-                }
-            }
+            //     if (initialValue && typeof initialValue === "string") {
+            //         set(formValues, field?.name, "");
+            //     }
+            // }
 
             if (field?.meta?.dependentProperties
                 && Array.isArray(field?.meta?.dependentProperties)
