@@ -166,7 +166,6 @@ export const commonConfigReducerInitialState: CommonConfigReducerStateInterface<
         },
         features: {
             applications: null,
-            applicationsSettings: null,
             approvals: null,
             attributeDialects: null,
             certificates: null,
@@ -202,7 +201,6 @@ export const commonConfigReducerInitialState: CommonConfigReducerStateInterface<
             enableCustomEmailTemplates: undefined,
             features: {
                 applications: null,
-                applicationsSettings: null,
                 approvals: null,
                 attributeDialects: null,
                 certificates: null,
