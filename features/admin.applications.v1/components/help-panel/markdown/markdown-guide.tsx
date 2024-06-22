@@ -25,13 +25,20 @@ import {
     Markdown
 } from "@wso2is/react-components";
 import get from "lodash-es/get";
+import set from "lodash-es/set";
 import React, { FunctionComponent, ReactElement, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
-import { useGetApplication } from "../../api/use-get-application";
-import useGetApplicationInboundConfigs from "../../api/use-get-application-inbound-configs";
-import { SAMLApplicationConfigurationInterface, SupportedAuthProtocolTypes } from "../../models";
+import * as CustomMarkdownComponents from "./components";
+import { useGetApplication } from "../../../api/use-get-application";
+import useGetApplicationInboundConfigs from "../../../api/use-get-application-inbound-configs";
+import {
+    ApplicationInterface,
+    SAML2ServiceProviderInterface,
+    SAMLApplicationConfigurationInterface,
+    SupportedAuthProtocolTypes
+} from "../../../models";
 
 /**
  * Prop types of the `MarkdownGuide` component.
@@ -49,6 +56,21 @@ export interface MarkdownGuidePropsInterface extends IdentifiableComponentInterf
      * Is the application info request loading.
      */
     isLoading?: boolean;
+}
+
+/**
+ * An interface that includes all the data types which can be used in the markdown guide.
+ */
+interface MarkdownGuideDataInterface {
+    general?: ApplicationInterface;
+    protocol?: {
+        saml?: SAML2ServiceProviderInterface;
+    };
+    metadata?: {
+        saml?: SAMLApplicationConfigurationInterface;
+    }
+    tenantDomain?: string;
+    clientOrigin?: string;
 }
 
 /**
@@ -81,7 +103,9 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
         error: applicationInboundProtocolFetchRequestError
     } = useGetApplicationInboundConfigs(applicationId, SupportedAuthProtocolTypes.SAML, !!applicationId);
     const samlConfigurations: SAMLApplicationConfigurationInterface = useSelector(
-        (state: AppState) => state.application.samlConfigurations);
+        (state: AppState) => state?.application?.samlConfigurations);
+    const tenantDomain: string = useSelector((state: AppState) => state?.auth?.tenantDomain);
+    const clientOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.clientOrigin);
 
     /**
      * Handles the application get request error.
@@ -137,17 +161,45 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
         }));
     }, [ applicationInboundProtocolFetchRequestError ]);
 
+    /**
+     * Create a unified data object for the current application
+     * by combining multiple API responses.
+     */
+    const data: MarkdownGuideDataInterface = useMemo(() => {
+        const markdownDataObject: MarkdownGuideDataInterface = {};
+
+        if (application) {
+            markdownDataObject.general = application;
+        }
+        if (applicationInboundProtocol) {
+            set(markdownDataObject, "protocol.saml", applicationInboundProtocol);
+        }
+        if (samlConfigurations) {
+            set(markdownDataObject, "metadata.saml", samlConfigurations);
+        }
+        if (tenantDomain) {
+            markdownDataObject.tenantDomain = tenantDomain;
+        }
+        if (clientOrigin) {
+            markdownDataObject.clientOrigin = clientOrigin;
+        }
+
+        return markdownDataObject;
+    }, [
+        application,
+        applicationInboundProtocol,
+        samlConfigurations,
+        tenantDomain,
+        clientOrigin
+    ]);
+
+    /**
+     * Create the final markdown content to render by replacing the possible
+     * included placeholders.
+     */
     const moderatedContent: string = useMemo(() => {
         return content.replace(/\${([^}]+?)}/g, (match: string, key: string) => {
-            let propertyValue: unknown = get(application, key);
-
-            if (!propertyValue) {
-                propertyValue = get(applicationInboundProtocol, key);
-            }
-
-            if (!propertyValue) {
-                propertyValue = get(samlConfigurations, key);
-            }
+            const propertyValue: unknown = get(data, key);
 
             if (propertyValue && typeof propertyValue === "string") {
                 return propertyValue;
@@ -155,16 +207,17 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
 
             return match;
         });
-    }, [ content ]);
+    }, [ content, data ]);
 
     return (
         <EmphasizedSegment data-componentid={ componentId } padded="very">
             {
-                isLoading || applicationLoading || applicationInboundProtocolLoading
+                isLoading || applicationLoading || applicationInboundProtocolLoading || !moderatedContent
                     ? <ContentLoader inline="centered" active/>
                     : (
                         <Markdown
-                            source={ moderatedContent }
+                            components={ CustomMarkdownComponents }
+                            source={ "> hi this is [link](https://google.com) blockquote.\n<!--rehype:title=This is a title&type=success-->" }
                         />
                     )
             }

@@ -53,7 +53,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
 import { CheckboxProps, Divider, Form, Grid, Menu, TabProps } from "semantic-ui-react";
 import { ApplicationEditForm } from "./dynamic-forms/application-edit-form";
-import { MarkdownGuide } from "./help-panel/markdown-guide";
+import { MarkdownGuide } from "./help-panel/markdown/markdown-guide";
 import { InboundProtocolsMeta } from "./meta";
 import {
     AccessConfiguration,
