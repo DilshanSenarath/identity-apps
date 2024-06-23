@@ -16,21 +16,10 @@
  * under the License.
  */
 
-export * from "./markdown-link";
-export * from "./blockquote";
-export * from "./paragraph";
-export * from "./heading1";
-export * from "./heading2";
-export * from "./heading3";
-export * from "./heading4";
-export * from "./heading5";
-export * from "./heading6";
-export * from "./code";
-export * from "./italic";
-export * from "./divider";
-export * from "./unordered-list";
-export * from "./ordered-list";
-export * from "./list-item";
-export * from "./strong";
-export * from "./pre";
-export * from "./image";
+.markdown-image {
+    border: 1px solid rgba(34,36,38,.15) !important;
+
+    &.full-width {
+        width: 100%;
+    }
+}

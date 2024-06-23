@@ -23,9 +23,16 @@ import React, { FunctionComponent, ReactElement } from "react";
 import { childRenderer } from "./utils";
 
 /**
- * Props interface for the `AlertMessage` component.
+ * Custom blockquote component types.
  */
-interface AlertMessageProps extends MarkdownCustomComponentPropsInterface<"blockquote"> {
+enum CustomBlockquoteTypes {
+    WRAPPER = "wrapper"
+}
+
+/**
+ * Props interface for the `Blockquote` component.
+ */
+interface BlockquoteProps extends MarkdownCustomComponentPropsInterface<"blockquote"> {
     /**
      * Custom attributes supplied by the 'rehype-attr' plugin.
      */
@@ -33,7 +40,7 @@ interface AlertMessageProps extends MarkdownCustomComponentPropsInterface<"block
         /**
          * Type of the alert message.
          */
-        type?: AlertProps["severity"];
+        type?: AlertProps["severity"] | CustomBlockquoteTypes;
         /**
          * Title of the alert message.
          */
@@ -47,16 +54,20 @@ interface AlertMessageProps extends MarkdownCustomComponentPropsInterface<"block
          * Boolean flag to determine if the icon should be displayed.
          */
         icon?: boolean;
+        /**
+         * If the component type is wrapper how much identations are needed.
+         * 1 Indent = 5px
+         */
+        indent?: number;
     };
 }
 
 /**
  * Markdown custom component for the blockquote element.
- * This component corresponds to the 'AlertMessage' component in our Markdown.
  *
  * @param Props - Props to be injected into the component.
  */
-const AlertMessage: FunctionComponent<AlertMessageProps> = (props: AlertMessageProps): ReactElement => {
+const Blockquote: FunctionComponent<BlockquoteProps> = (props: BlockquoteProps): ReactElement => {
     const {
         children,
         "data-config": dataConfig,
@@ -68,27 +79,39 @@ const AlertMessage: FunctionComponent<AlertMessageProps> = (props: AlertMessageP
     }
 
     return (
-        <Alert
-            severity={ dataConfig?.type || "info" }
-            icon={ dataConfig?.icon === false ? false : undefined }
-            variant={ dataConfig?.variant || "standard" }
-            data-componentid={ componentId }
-        >
-            {
-                dataConfig?.title ? (
-                    <AlertTitle>{ dataConfig?.title }</AlertTitle>
-                ) : null
-            }
-            { childRenderer(props) }
-        </Alert>
+        dataConfig?.type === CustomBlockquoteTypes.WRAPPER || !dataConfig?.type
+            ? (
+                <div
+                    style={ {
+                        marginLeft: `${ 5 * (dataConfig?.indent === undefined ? 9 : dataConfig?.indent) }px`
+                    } }
+                >
+                    { childRenderer(props) }
+                </div>
+            )
+            : (
+                <Alert
+                    severity={ dataConfig?.type || "info" }
+                    icon={ dataConfig?.icon === false ? false : undefined }
+                    variant={ dataConfig?.variant || "standard" }
+                    data-componentid={ componentId }
+                >
+                    {
+                        dataConfig?.title ? (
+                            <AlertTitle>{ dataConfig?.title }</AlertTitle>
+                        ) : null
+                    }
+                    { childRenderer(props) }
+                </Alert>
+            )
     );
 };
 
 /**
- * Default props for the `AlertMessage` component.
+ * Default props for the `Blockquote` component.
  */
-AlertMessage.defaultProps = {
+Blockquote.defaultProps = {
     "data-componentid": "custom-markdown-blockquote"
 };
 
-export { AlertMessage as blockquote };
+export { Blockquote as blockquote };

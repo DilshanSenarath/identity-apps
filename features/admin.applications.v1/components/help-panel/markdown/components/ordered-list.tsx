@@ -16,46 +16,39 @@
  * under the License.
  */
 
-import Typography from "@oxygen-ui/react/Typography";
 import { MarkdownCustomComponentPropsInterface } from "@wso2is/react-components";
 import React, { FunctionComponent, ReactElement } from "react";
 import { childRenderer } from "./utils";
 
 /**
- * Markdown custom component for the paragraph element.
+ * Markdown custom component for the ol element.
  *
  * @param Props - Props to be injected into the component.
  */
-const Paragraph: FunctionComponent<
-    MarkdownCustomComponentPropsInterface<"p">
-> = (props: MarkdownCustomComponentPropsInterface<"p">): ReactElement => {
+const OrderedList: FunctionComponent<
+    MarkdownCustomComponentPropsInterface<"ol">
+> = (props: MarkdownCustomComponentPropsInterface<"ol">): ReactElement => {
     const {
         children,
         "data-componentid": componentId
     } = props;
 
-    if (!children) {
+    if (!Array.isArray(children)) {
         return null;
     }
 
     return (
-        <Typography variant="body1" component="p" data-componentid={ componentId }>
-            {
-                typeof children === "string" ? (
-                    children
-                ): (
-                    childRenderer(props)
-                )
-            }
-        </Typography>
+        <ol data-componentid={ componentId }>
+            { childRenderer(props) }
+        </ol>
     );
 };
 
 /**
- * Default props for the `Paragraph` component.
+ * Default props for the `OrderedList` component.
  */
-Paragraph.defaultProps = {
-    "data-componentid": "custom-markdown-paragraph"
+OrderedList.defaultProps = {
+    "data-componentid": "custom-markdown-ul"
 };
 
-export { Paragraph as p };
+export { OrderedList as ol };

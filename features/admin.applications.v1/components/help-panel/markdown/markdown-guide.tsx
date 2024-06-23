@@ -39,6 +39,7 @@ import {
     SAMLApplicationConfigurationInterface,
     SupportedAuthProtocolTypes
 } from "../../../models";
+import "./markdown-guide.scss";
 
 /**
  * Prop types of the `MarkdownGuide` component.
@@ -210,18 +211,19 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
     }, [ content, data ]);
 
     return (
-        <EmphasizedSegment data-componentid={ componentId } padded="very">
+        <div className="markdown-guide" data-componentid={ componentId }>
             {
                 isLoading || applicationLoading || applicationInboundProtocolLoading || !moderatedContent
                     ? <ContentLoader inline="centered" active/>
                     : (
                         <Markdown
+                            allowedElements={ Object.keys(CustomMarkdownComponents) }
                             components={ CustomMarkdownComponents }
-                            source={ "> hi this is [link](https://google.com) blockquote.\n<!--rehype:title=This is a title&type=success-->" }
+                            source={ "# Hi this is a heading\n***\n***\n> ![image](https://private-user-images.githubusercontent.com/74205483/335939624-4ca34bf8-c916-4785-83d5-dd21aab4ec7c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTkxNzEwNjEsIm5iZiI6MTcxOTE3MDc2MSwicGF0aCI6Ii83NDIwNTQ4My8zMzU5Mzk2MjQtNGNhMzRiZjgtYzkxNi00Nzg1LTgzZDUtZGQyMWFhYjRlYzdjLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA2MjMlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNjIzVDE5MjYwMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTQ2ZDg1ODJiZWIyYmM0YjJkNjkwMTcxMTAxNjZiN2ZiNGE0ZDcxZWUxODY1ZjRlNzJmYjNlM2ZjMDFmODYzZTAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.nAGkhBrasNdjuNTUbV03joVBRh0xFroV0f1syrpdEOU)" }
                         />
                     )
             }
-        </EmphasizedSegment>
+        </div>
     );
 };
 

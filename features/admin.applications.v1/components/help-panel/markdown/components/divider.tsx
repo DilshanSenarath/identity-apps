@@ -16,46 +16,32 @@
  * under the License.
  */
 
-import Typography from "@oxygen-ui/react/Typography";
 import { MarkdownCustomComponentPropsInterface } from "@wso2is/react-components";
 import React, { FunctionComponent, ReactElement } from "react";
-import { childRenderer } from "./utils";
+import "./divider.scss";
 
 /**
- * Markdown custom component for the paragraph element.
+ * Markdown custom component for the hr element.
  *
  * @param Props - Props to be injected into the component.
  */
-const Paragraph: FunctionComponent<
-    MarkdownCustomComponentPropsInterface<"p">
-> = (props: MarkdownCustomComponentPropsInterface<"p">): ReactElement => {
+const MarkdownDivider: FunctionComponent<
+    MarkdownCustomComponentPropsInterface<"hr">
+> = (props: MarkdownCustomComponentPropsInterface<"hr">): ReactElement => {
     const {
-        children,
         "data-componentid": componentId
     } = props;
 
-    if (!children) {
-        return null;
-    }
-
     return (
-        <Typography variant="body1" component="p" data-componentid={ componentId }>
-            {
-                typeof children === "string" ? (
-                    children
-                ): (
-                    childRenderer(props)
-                )
-            }
-        </Typography>
+        <div className="markdown-divider" data-componentid={ componentId }/>
     );
 };
 
 /**
- * Default props for the `Paragraph` component.
+ * Default props for the `MarkdownDivider` component.
  */
-Paragraph.defaultProps = {
-    "data-componentid": "custom-markdown-paragraph"
+MarkdownDivider.defaultProps = {
+    "data-componentid": "custom-markdown-divider"
 };
 
-export { Paragraph as p };
+export { MarkdownDivider as hr };

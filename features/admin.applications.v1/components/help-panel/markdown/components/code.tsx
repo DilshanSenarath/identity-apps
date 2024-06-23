@@ -16,46 +16,36 @@
  * under the License.
  */
 
-import Typography from "@oxygen-ui/react/Typography";
-import { MarkdownCustomComponentPropsInterface } from "@wso2is/react-components";
+import { Code, MarkdownCustomComponentPropsInterface } from "@wso2is/react-components";
 import React, { FunctionComponent, ReactElement } from "react";
-import { childRenderer } from "./utils";
 
 /**
- * Markdown custom component for the paragraph element.
+ * Markdown custom component for the code element.
  *
  * @param Props - Props to be injected into the component.
  */
-const Paragraph: FunctionComponent<
-    MarkdownCustomComponentPropsInterface<"p">
-> = (props: MarkdownCustomComponentPropsInterface<"p">): ReactElement => {
+const MarkdownCode: FunctionComponent<
+    MarkdownCustomComponentPropsInterface<"code">
+> = (props: MarkdownCustomComponentPropsInterface<"code">): ReactElement => {
     const {
         children,
         "data-componentid": componentId
     } = props;
 
-    if (!children) {
+    if (typeof children !== "string") {
         return null;
     }
 
     return (
-        <Typography variant="body1" component="p" data-componentid={ componentId }>
-            {
-                typeof children === "string" ? (
-                    children
-                ): (
-                    childRenderer(props)
-                )
-            }
-        </Typography>
+        <Code data-componentid={ componentId }>{ children }</Code>
     );
 };
 
 /**
- * Default props for the `Paragraph` component.
+ * Default props for the `MarkdownCode` component.
  */
-Paragraph.defaultProps = {
-    "data-componentid": "custom-markdown-paragraph"
+MarkdownCode.defaultProps = {
+    "data-componentid": "custom-markdown-code"
 };
 
-export { Paragraph as p };
+export { MarkdownCode as code };

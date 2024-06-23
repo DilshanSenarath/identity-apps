@@ -22,13 +22,13 @@ import React, { FunctionComponent, ReactElement } from "react";
 import { childRenderer } from "./utils";
 
 /**
- * Markdown custom component for the paragraph element.
+ * Markdown custom component for the h6 element.
  *
  * @param Props - Props to be injected into the component.
  */
-const Paragraph: FunctionComponent<
-    MarkdownCustomComponentPropsInterface<"p">
-> = (props: MarkdownCustomComponentPropsInterface<"p">): ReactElement => {
+const Heading6: FunctionComponent<
+    MarkdownCustomComponentPropsInterface<"h6">
+> = (props: MarkdownCustomComponentPropsInterface<"h6">): ReactElement => {
     const {
         children,
         "data-componentid": componentId
@@ -39,7 +39,7 @@ const Paragraph: FunctionComponent<
     }
 
     return (
-        <Typography variant="body1" component="p" data-componentid={ componentId }>
+        <Typography variant="subtitle1" component="h6" data-componentid={ componentId }>
             {
                 typeof children === "string" ? (
                     children
@@ -52,10 +52,10 @@ const Paragraph: FunctionComponent<
 };
 
 /**
- * Default props for the `Paragraph` component.
+ * Default props for the `Heading6` component.
  */
-Paragraph.defaultProps = {
-    "data-componentid": "custom-markdown-paragraph"
+Heading6.defaultProps = {
+    "data-componentid": "custom-markdown-heading6"
 };
 
-export { Paragraph as p };
+export { Heading6 as h6 };
