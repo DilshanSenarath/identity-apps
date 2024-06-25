@@ -31,6 +31,11 @@ interface MarkdownPreProps extends MarkdownCustomComponentPropsInterface<"pre"> 
          * Flag to determine whether the content is multiline.
          */
         multiline?: boolean;
+        /**
+         * If the component type is wrapper how much indentation is needed.
+         * 1 Indent = 5px
+         */
+        indent?: number;
     };
 }
 
@@ -50,7 +55,7 @@ const MarkdownPre: FunctionComponent<MarkdownPreProps> = (props: MarkdownPreProp
     const language: string = children?.["props"]?.["className"]?.split("language-")?.[1];
 
     if (content?.endsWith("\n")) {
-        content = content.substring(0, content.length - 2);
+        content = content.substring(0, content.length - 1);
     }
 
     if (typeof content !== "string") {
@@ -58,7 +63,13 @@ const MarkdownPre: FunctionComponent<MarkdownPreProps> = (props: MarkdownPreProp
     }
 
     return (
-        <div className="code-segment" data-componentid={ componentId }>
+        <div
+            className="code-segment"
+            data-componentid={ componentId }
+            style={ {
+                marginLeft: `${ 5 * (dataConfig?.indent === undefined ? 0 : dataConfig?.indent) }px`
+            } }
+        >
             <CodeEditor
                 oneLiner={ dataConfig?.multiline === true ? undefined : true }
                 readOnly

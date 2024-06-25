@@ -51,6 +51,16 @@ interface MarkdownLinkProps extends MarkdownCustomComponentPropsInterface<"a"> {
          * If the link is a download link, specify the name for the downloaded file.
          */
         fileName?: string;
+        /**
+         * Download the string content as a file.
+         * This will take precedence over href.
+         * Content should have a Base64 encoded string.
+         */
+        content?: string;
+        /**
+         * The type that should be assigned to the above content file.
+         */
+        type?: string;
     };
 }
 
@@ -125,6 +135,20 @@ const MarkdownLink: FunctionComponent<MarkdownLinkProps> = (props: MarkdownLinkP
      * Initiate the download process.
      */
     const initDownload = (): void => {
+        if (dataConfig?.content && dataConfig?.type) {
+            const blob: Blob = new Blob([ atob(dataConfig?.content) ], {
+                type: dataConfig?.type
+            });
+
+            if (dataConfig?.fileName) {
+                saveAs(blob, dataConfig?.fileName);
+            } else {
+                saveAs(blob, DEFAULT_DOWNLOAD_FILE_NAME);
+            }
+
+            return;
+        }
+
         if (blobFetchRequestIsLoading) {
             return;
         }

@@ -41,7 +41,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RouteComponentProps } from "react-router";
 import { Dispatch } from "redux";
-import { Label } from "semantic-ui-react";
+import { Icon, Label } from "semantic-ui-react";
 import { useGetApplication } from "../api/use-get-application";
 import { ApplicationSyncWizard } from "../components/dynamic-forms/application-sync-wizard";
 import { EditApplication } from "../components/edit-application";
@@ -511,16 +511,18 @@ const ApplicationEditPage: FunctionComponent<ApplicationEditPageInterface> = (
                     <span>{ moderatedApplicationData?.name }</span>
                     {
                         extensionApplicationTemplate &&
-                            extensionApplicationTemplate?.category === ApplicationTemplateCategories.SSO_INTEGRATION &&
-                            showSyncStatus
+                            extensionApplicationTemplate?.category ===
+                                ApplicationTemplateCategories.SSO_INTEGRATION &&
+                            !showSyncStatus
                             ? (
                                 <LabelWithPopup
                                     popupHeader={ `${extensionApplicationTemplate?.name} Outdated` }
                                     popupSubHeader={
                                         (<>
                                             {
-                                                "Your application's essential configurations may be outdated due to "
-                                                    + `recent changes by ${extensionApplicationTemplate?.name} or `
+                                                "Your application's essential configurations "
+                                                    + "may be outdated due to recent changes "
+                                                    + `by ${extensionApplicationTemplate?.name} or `
                                                     + "updates via the API. Click "
                                             }
                                             <Link
@@ -542,6 +544,16 @@ const ApplicationEditPage: FunctionComponent<ApplicationEditPageInterface> = (
                                             hoverable: true
                                         }
                                     }
+                                    trigger={ (
+                                        <Label
+                                            circular
+                                            size="mini"
+                                            className="spaced-right status-label-with-popup"
+                                            color="orange"
+                                        >
+                                            <Icon name="warning" fitted />
+                                        </Label>
+                                    ) }
                                 />
                             )
                             : null

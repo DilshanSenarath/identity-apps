@@ -18,6 +18,7 @@
 
 import { IdentifiableComponentInterface } from "@wso2is/core/models";
 import { CheckboxFieldAdapter, FinalFormField, FormApi, TextFieldAdapter } from "@wso2is/form";
+import { Hint } from "@wso2is/react-components";
 import React, { FunctionComponent, PropsWithChildren, ReactElement } from "react";
 import ApplicationCertificateAdapter from "./custom-fields/application-certificate-adapter";
 import { ApplicationInterface } from "../../models";
@@ -78,13 +79,18 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         aria-label={ field?.["aria-label"] }
                         data-componentid={ field?.dataComponentId }
                         name={ field?.name }
-                        type={ field?.type }
                         label={ field?.label }
                         placeholder={ field?.placeholder }
                         component={ CheckboxFieldAdapter }
                         disabled={ readOnly || field?.readOnly }
                         required={ field?.required }
-                        hint={ field?.helperText }
+                        hint={
+                            field?.helperText ? (
+                                <Hint compact>
+                                    { field?.helperText }
+                                </Hint>
+                            ) : null
+                        }
                     />
                 );
             case DynamicInputFieldTypes.TEXT:
@@ -103,7 +109,13 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         component={ TextFieldAdapter }
                         readOnly={ readOnly || field?.readOnly }
                         required={ field?.required }
-                        helperText={ field?.helperText }
+                        helperText={
+                            field?.helperText ? (
+                                <Hint compact>
+                                    { field?.helperText }
+                                </Hint>
+                            ) : null
+                        }
                     />
                 );
             case DynamicInputFieldTypes.TEXTAREA:
@@ -124,7 +136,13 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         rows={ 3 }
                         multiline={ true }
                         required={ field?.required }
-                        helperText={ field?.helperText }
+                        helperText={
+                            field?.helperText ? (
+                                <Hint compact>
+                                    { field?.helperText }
+                                </Hint>
+                            ) : null
+                        }
                     />
                 );
             case DynamicInputFieldTypes.APPLICATION_CERTIFICATE:
@@ -160,7 +178,13 @@ export const ApplicationFormDynamicField: FunctionComponent<PropsWithChildren<
                         component={ TextFieldAdapter }
                         readOnly={ readOnly || field?.readOnly }
                         required={ field?.required }
-                        helperText={ field?.helperText }
+                        helperText={
+                            field?.helperText ? (
+                                <Hint compact>
+                                    { field?.helperText }
+                                </Hint>
+                            ) : null
+                        }
                     />
                 );
         }

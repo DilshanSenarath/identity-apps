@@ -55,7 +55,7 @@ interface BlockquoteProps extends MarkdownCustomComponentPropsInterface<"blockqu
          */
         icon?: boolean;
         /**
-         * If the component type is wrapper how much identations are needed.
+         * If the component type is wrapper how much indentation is needed.
          * 1 Indent = 5px
          */
         indent?: number;
@@ -95,6 +95,9 @@ const Blockquote: FunctionComponent<BlockquoteProps> = (props: BlockquoteProps):
                     icon={ dataConfig?.icon === false ? false : undefined }
                     variant={ dataConfig?.variant || "standard" }
                     data-componentid={ componentId }
+                    style={ {
+                        marginLeft: `${ 5 * (dataConfig?.indent === undefined ? 0 : dataConfig?.indent) }px`
+                    } }
                 >
                     {
                         dataConfig?.title ? (

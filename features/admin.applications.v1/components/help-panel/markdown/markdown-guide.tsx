@@ -21,7 +21,6 @@ import { AlertLevels, IdentifiableComponentInterface } from "@wso2is/core/models
 import { addAlert } from "@wso2is/core/store";
 import {
     ContentLoader,
-    EmphasizedSegment,
     Markdown
 } from "@wso2is/react-components";
 import get from "lodash-es/get";
@@ -30,6 +29,7 @@ import React, { FunctionComponent, ReactElement, useEffect, useMemo } from "reac
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
+import { Grid } from "semantic-ui-react";
 import * as CustomMarkdownComponents from "./components";
 import { useGetApplication } from "../../../api/use-get-application";
 import useGetApplicationInboundConfigs from "../../../api/use-get-application-inbound-configs";
@@ -60,6 +60,13 @@ export interface MarkdownGuidePropsInterface extends IdentifiableComponentInterf
 }
 
 /**
+ * An interface that includes all the moderated data types using initial data.
+ */
+interface ModeratedData {
+    pemCertificate?: string;
+}
+
+/**
  * An interface that includes all the data types which can be used in the markdown guide.
  */
 interface MarkdownGuideDataInterface {
@@ -72,6 +79,8 @@ interface MarkdownGuideDataInterface {
     }
     tenantDomain?: string;
     clientOrigin?: string;
+    serverOrigin?: string;
+    moderatedData?: ModeratedData;
 }
 
 /**
@@ -107,6 +116,7 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
         (state: AppState) => state?.application?.samlConfigurations);
     const tenantDomain: string = useSelector((state: AppState) => state?.auth?.tenantDomain);
     const clientOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.clientOrigin);
+    const serverOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.idpConfigs?.serverOrigin);
 
     /**
      * Handles the application get request error.
@@ -163,6 +173,36 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
     }, [ applicationInboundProtocolFetchRequestError ]);
 
     /**
+     * Convert certificate into the pem format.
+     *
+     * @param cert - Certificate in string format.
+     * @returns Pem format certificate content.
+     */
+    function getPemFormatCertificate(cert: string): string {
+        const header: string = "-----BEGIN CERTIFICATE-----";
+        const footer: string = "-----END CERTIFICATE-----";
+        const lineLength: number = 64;
+
+        // Insert line breaks every `lineLength` characters.
+        const formattedCert: string = cert.match(new RegExp(".{1," + lineLength + "}", "g"))?.join("\n") || "";
+
+        return `${header}\n${formattedCert}\n${footer}`;
+    }
+
+    /**
+     * Prepare moderated data using the initial API response data.
+     */
+    const getModeratedData = (): ModeratedData => {
+        const data: ModeratedData = {};
+
+        if (samlConfigurations?.certificate) {
+            data.pemCertificate = btoa(getPemFormatCertificate(samlConfigurations?.certificate));
+        }
+
+        return data;
+    };
+
+    /**
      * Create a unified data object for the current application
      * by combining multiple API responses.
      */
@@ -183,6 +223,12 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
         }
         if (clientOrigin) {
             markdownDataObject.clientOrigin = clientOrigin;
+        }
+        if (serverOrigin) {
+            markdownDataObject.serverOrigin = serverOrigin;
+        }
+        if (application) {
+            markdownDataObject.moderatedData = getModeratedData();
         }
 
         return markdownDataObject;
@@ -211,19 +257,23 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
     }, [ content, data ]);
 
     return (
-        <div className="markdown-guide" data-componentid={ componentId }>
-            {
-                isLoading || applicationLoading || applicationInboundProtocolLoading || !moderatedContent
-                    ? <ContentLoader inline="centered" active/>
-                    : (
-                        <Markdown
-                            allowedElements={ Object.keys(CustomMarkdownComponents) }
-                            components={ CustomMarkdownComponents }
-                            source={ "# Hi this is a heading\n***\n***\n> ![image](https://private-user-images.githubusercontent.com/74205483/335939624-4ca34bf8-c916-4785-83d5-dd21aab4ec7c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTkxNzEwNjEsIm5iZiI6MTcxOTE3MDc2MSwicGF0aCI6Ii83NDIwNTQ4My8zMzU5Mzk2MjQtNGNhMzRiZjgtYzkxNi00Nzg1LTgzZDUtZGQyMWFhYjRlYzdjLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA2MjMlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNjIzVDE5MjYwMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTQ2ZDg1ODJiZWIyYmM0YjJkNjkwMTcxMTAxNjZiN2ZiNGE0ZDcxZWUxODY1ZjRlNzJmYjNlM2ZjMDFmODYzZTAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.nAGkhBrasNdjuNTUbV03joVBRh0xFroV0f1syrpdEOU)" }
-                        />
-                    )
-            }
-        </div>
+        <Grid className="markdown-guide" data-componentid={ componentId }>
+            <Grid.Row columns={ 1 }>
+                <Grid.Column mobile={ 16 } tablet={ 16 } computer={ 13 }>
+                    {
+                        isLoading || applicationLoading || applicationInboundProtocolLoading || !moderatedContent
+                            ? <ContentLoader inline="centered" active/>
+                            : (
+                                <Markdown
+                                    allowedElements={ Object.keys(CustomMarkdownComponents) }
+                                    components={ CustomMarkdownComponents }
+                                    source={ moderatedContent }
+                                />
+                            )
+                    }
+                </Grid.Column>
+            </Grid.Row>
+        </Grid>
     );
 };
 

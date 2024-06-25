@@ -122,6 +122,7 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
         state?.config?.ui?.isClientSecretHashEnabled);
     const tenantDomain: string = useSelector((state: AppState) => state?.auth?.tenantDomain);
     const clientOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.clientOrigin);
+    const serverOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.idpConfigs?.serverOrigin);
 
     const eventPublisher: EventPublisher = EventPublisher.getInstance();
 
@@ -319,6 +320,8 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
                 return tenantDomain;
             case "clientOrigin":
                 return clientOrigin;
+            case "serverOrigin":
+                return serverOrigin;
             default:
                 return "";
         }

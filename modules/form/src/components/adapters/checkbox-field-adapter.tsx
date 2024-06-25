@@ -55,6 +55,7 @@ const CheckboxAdapter: FunctionComponent<CheckboxAdapterPropsInterface> = (
         FormControlProps = {},
         ...rest
     } = props;
+    console.log(input);
 
     const isError: boolean = (meta.error || meta.submitError) && meta.touched;
 
