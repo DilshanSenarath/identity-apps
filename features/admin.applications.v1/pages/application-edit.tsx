@@ -513,7 +513,7 @@ const ApplicationEditPage: FunctionComponent<ApplicationEditPageInterface> = (
                         extensionApplicationTemplate &&
                             extensionApplicationTemplate?.category ===
                                 ApplicationTemplateCategories.SSO_INTEGRATION &&
-                            !showSyncStatus
+                            showSyncStatus
                             ? (
                                 <LabelWithPopup
                                     popupHeader={ `${extensionApplicationTemplate?.name} Outdated` }
