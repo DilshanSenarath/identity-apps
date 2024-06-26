@@ -123,6 +123,8 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
     const tenantDomain: string = useSelector((state: AppState) => state?.auth?.tenantDomain);
     const clientOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.clientOrigin);
     const serverOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.idpConfigs?.serverOrigin);
+    const appBaseNameWithoutTenant: string = useSelector((state: AppState) =>
+        state?.config?.deployment?.appBaseNameWithoutTenant);
 
     const eventPublisher: EventPublisher = EventPublisher.getInstance();
 
@@ -285,7 +287,7 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
     const handleAppCreationComplete = (createdAppId: string): void => {
         // The created resource's id is sent as a location header.
         // If that's available, navigate to the edit page.
-        if (!createdAppId) {
+        if (createdAppId) {
             let searchParams: string = "?";
             const defaultTabIndex: number = 0;
 
@@ -322,6 +324,8 @@ export const ApplicationCreateWizard: FunctionComponent<ApplicationCreateWizardP
                 return clientOrigin;
             case "serverOrigin":
                 return serverOrigin;
+            case "appBaseNameWithoutTenant":
+                return appBaseNameWithoutTenant;
             default:
                 return "";
         }
