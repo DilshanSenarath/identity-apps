@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import { AppState } from "@wso2is/admin.core.v1";
+import { AppState, history } from "@wso2is/admin.core.v1";
 import { AlertLevels, IdentifiableComponentInterface } from "@wso2is/core/models";
 import { addAlert } from "@wso2is/core/store";
 import {
@@ -31,6 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
 import { Grid } from "semantic-ui-react";
 import * as CustomMarkdownComponents from "./components";
+import GlobalMarkdownProvider from "./global-markdown-provider";
 import { useGetApplication } from "../../../api/use-get-application";
 import useGetApplicationInboundConfigs from "../../../api/use-get-application-inbound-configs";
 import {
@@ -117,6 +118,8 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
     const tenantDomain: string = useSelector((state: AppState) => state?.auth?.tenantDomain);
     const clientOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.clientOrigin);
     const serverOrigin: string = useSelector((state: AppState) => state?.config?.deployment?.idpConfigs?.serverOrigin);
+    const appBaseName: string = useSelector((state: AppState) =>
+        state?.config?.deployment?.appBaseName);
 
     /**
      * Handles the application get request error.
@@ -256,6 +259,25 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
         });
     }, [ content, data ]);
 
+    /**
+     * Manage internal navigation for relative URLs.
+     *
+     * @param path - Relative pathname.
+     */
+    const handleInternalUrl = (path: string) => {
+        let pathname: string = path;
+
+        if (!pathname?.startsWith("/")) {
+            pathname = "/" + pathname;
+        }
+
+        if (!pathname?.startsWith(appBaseName)) {
+            pathname = appBaseName + pathname;
+        }
+
+        history.push({ pathname });
+    };
+
     return (
         <Grid className="markdown-guide" data-componentid={ componentId }>
             <Grid.Row columns={ 1 }>
@@ -264,11 +286,15 @@ export const MarkdownGuide: FunctionComponent<MarkdownGuidePropsInterface> = (
                         isLoading || applicationLoading || applicationInboundProtocolLoading || !moderatedContent
                             ? <ContentLoader inline="centered" active/>
                             : (
-                                <Markdown
-                                    allowedElements={ Object.keys(CustomMarkdownComponents) }
-                                    components={ CustomMarkdownComponents }
-                                    source={ moderatedContent }
-                                />
+                                <GlobalMarkdownProvider
+                                    onHandleInternalUrl={ handleInternalUrl }
+                                >
+                                    <Markdown
+                                        allowedElements={ Object.keys(CustomMarkdownComponents) }
+                                        components={ CustomMarkdownComponents }
+                                        source={ moderatedContent }
+                                    />
+                                </GlobalMarkdownProvider>
                             )
                     }
                 </Grid.Column>

@@ -18,16 +18,18 @@
 
 import { AlertLevels } from "@wso2is/core/models";
 import { addAlert } from "@wso2is/core/store";
+import { URLUtils } from "@wso2is/core/utils";
 import {
     Link,
     MarkdownCustomComponentPropsInterface
 } from "@wso2is/react-components";
 import { saveAs } from "file-saver";
-import React, { FunctionComponent, ReactElement, useEffect, useState } from "react";
+import React, { FunctionComponent, ReactElement, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "redux";
 import { useGetBlobResource } from "../../../../api/use-get-blob-resource";
+import useGlobalMarkdown from "../use-global-markdown";
 
 const DEFAULT_DOWNLOAD_FILE_NAME: string = "download";
 
@@ -80,6 +82,8 @@ const MarkdownLink: FunctionComponent<MarkdownLinkProps> = (props: MarkdownLinkP
 
     const dispatch: Dispatch = useDispatch();
     const { t } = useTranslation();
+
+    const { onHandleInternalUrl } = useGlobalMarkdown();
 
     const [ downloadLink, setDownloadLink ] = useState("");
 
@@ -156,6 +160,17 @@ const MarkdownLink: FunctionComponent<MarkdownLinkProps> = (props: MarkdownLinkP
         setDownloadLink(href);
     };
 
+    /**
+     * Verify if the provided URL is relative.
+     */
+    const isInternalUrl: boolean = useMemo(() => {
+        if (href && (URLUtils.isHttpsOrHttpUrl(href) || href.startsWith("#"))) {
+            return false;
+        }
+
+        return true;
+    }, [ href ]);
+
     if (typeof children !== "string") {
         return null;
     }
@@ -163,7 +178,11 @@ const MarkdownLink: FunctionComponent<MarkdownLinkProps> = (props: MarkdownLinkP
     return (
         <Link
             link={ href }
-            onClick={ dataConfig?.download && initDownload }
+            onClick={
+                isInternalUrl
+                    ? () => onHandleInternalUrl(href)
+                    : dataConfig?.download && initDownload
+            }
             external={ !(dataConfig?.external === false) }
             target={ (dataConfig?.external === false) ? "_self" : "_blank" }
             data-componentid={ componentId }

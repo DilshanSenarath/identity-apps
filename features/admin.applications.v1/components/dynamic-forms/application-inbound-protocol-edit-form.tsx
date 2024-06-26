@@ -304,10 +304,11 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
             SupportedAuthProtocolTypes.SAML
         ).then(() => {
             dispatch(addAlert({
-                description: t("applications:notifications.updateApplication.success" +
-                    ".description"),
+                description: t("applications:notifications.updateInboundProtocolConfig" +
+                    ".success.description"),
                 level: AlertLevels.SUCCESS,
-                message: t("applications:notifications.updateApplication.success.message")
+                message: t("applications:notifications.updateInboundProtocolConfig" +
+                    ".success.message")
             }));
 
             onUpdate(application?.id);
@@ -316,19 +317,19 @@ export const ApplicationEditForm: FunctionComponent<ApplicationEditFormPropsInte
                 dispatch(addAlert({
                     description: error.response.data.description,
                     level: AlertLevels.ERROR,
-                    message: t("applications:notifications.updateApplication.error" +
-                        ".message")
+                    message: t("applications:notifications.updateInboundProtocolConfig" +
+                        ".error.message")
                 }));
 
                 return;
             }
 
             dispatch(addAlert({
-                description: t("applications:notifications.updateApplication" +
+                description: t("applications:notifications.updateInboundProtocolConfig" +
                     ".genericError.description"),
                 level: AlertLevels.ERROR,
-                message: t("applications:notifications.updateApplication.genericError" +
-                    ".message")
+                message: t("applications:notifications.updateInboundProtocolConfig" +
+                    ".genericError.message")
             }));
         }).finally(() => setIsSubmitting(false));
     };
