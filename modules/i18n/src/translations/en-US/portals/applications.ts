@@ -1538,7 +1538,7 @@ export const applications: ApplicationsNS = {
                     hint: "The authorized redirect URL determines where the authorization code is sent " +
                         "to upon user authentication, and where the user is redirected to upon user " +
                         "logout. The client app should specify the authorized redirect URL in the " +
-                        "authorization or logout request and {{productName}} will validate it against " +
+                        "authorization or logout request and asgardeo will validate it against " +
                         "the authorized redirect URLs entered here.",
                     info: "Don’t have an app? Try out a sample app using {{callBackURLFromTemplate}} " +
                         "as the authorized redirect URL. (You can download and run a sample at a " +

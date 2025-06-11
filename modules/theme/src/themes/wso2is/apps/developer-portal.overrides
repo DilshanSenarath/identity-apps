@@ -1430,7 +1430,7 @@ TODO : Move values to separate variables and cleanup styles.
     .layout-swatch {
         display: inline-block;
         width: @layoutSwatchWidth;
-        margin-right: 16px;
+        margin-right: 0px;
         vertical-align: top;
         margin-bottom: 16px;
         cursor: pointer;
