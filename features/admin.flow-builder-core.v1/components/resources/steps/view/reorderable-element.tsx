@@ -22,7 +22,15 @@ import { TrashIcon } from "@oxygen-ui/react-icons";
 import { IdentifiableComponentInterface } from "@wso2is/core/models";
 import { useNodeId } from "@xyflow/react";
 import classNames from "classnames";
-import React, { FunctionComponent, MouseEvent, MutableRefObject, ReactElement, SVGProps, useRef } from "react";
+import React, {
+    FunctionComponent,
+    MouseEvent,
+    MutableRefObject,
+    ReactElement,
+    SVGProps,
+    useEffect,
+    useRef
+} from "react";
 import VisualFlowConstants from "../../../../constants/visual-flow-constants";
 import useAuthenticationFlowBuilderCore from "../../../../hooks/use-authentication-flow-builder-core-context";
 import useComponentDelete from "../../../../hooks/use-component-delete";
@@ -104,6 +112,13 @@ export const ReorderableElement: FunctionComponent<ReorderableComponentPropsInte
         setIsOpenResourcePropertiesPanel
     } = useAuthenticationFlowBuilderCore();
     const { setOpenValidationPanel, setSelectedNotification } = useValidationStatus();
+
+    /**
+     * Trigger ON_NODE_ELEMENT_CHANGE event.
+     */
+    useEffect(() => {
+        PluginRegistry.getInstance().executeSync(EventTypes.ON_NODE_ELEMENT_CHANGE, stepId, element);
+    }, [ element, stepId ]);
 
     /**
      * Handles the opening of the property panel for the resource.

@@ -43,6 +43,7 @@ import useAuthenticationFlowBuilderCore from "../../hooks/use-authentication-flo
 import useComponentDelete from "../../hooks/use-component-delete";
 import useConfirmPasswordField from "../../hooks/use-confirm-password-field";
 import useDeleteExecutionResource from "../../hooks/use-delete-execution-resource";
+import useExecutorValidation from "../../hooks/use-executor-validation";
 import useGenerateStepElement from "../../hooks/use-generate-step-element";
 import useStaticContentField from "../../hooks/use-static-content-field";
 import { Element } from "../../models/elements";
@@ -114,6 +115,9 @@ const DecoratedVisualFlow: FunctionComponent<DecoratedVisualFlowPropsInterface> 
 
     // Event handlers for static content in execution steps.
     useStaticContentField();
+
+    // Event handlers for executor validation in execution steps.
+    useExecutorValidation();
 
     const { screenToFlowPosition, updateNodeData } = useReactFlow();
     const { generateStepElement } = useGenerateStepElement();

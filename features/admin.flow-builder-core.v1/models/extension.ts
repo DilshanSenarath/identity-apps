@@ -59,5 +59,13 @@ export enum EventTypes {
     /**
      * Event triggered when a custom nodes are registered to the flow.
      */
-    ON_CUSTOM_NODE_REGISTER = "onCustomNodeRegister"
+    ON_CUSTOM_NODE_REGISTER = "onCustomNodeRegister",
+    /**
+     * Event triggered when an execution node is changed.
+     */
+    ON_EXECUTION_NODE_CHANGE = "onExecutionNodeChange",
+    /**
+     * Event triggered when a node element is changed.
+     */
+    ON_NODE_ELEMENT_CHANGE = "onNodeElementChange"
 }

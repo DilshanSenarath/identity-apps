@@ -18,13 +18,15 @@
 
 import { IdentifiableComponentInterface } from "@wso2is/core/models";
 import cloneDeep from "lodash-es/cloneDeep";
-import React, { FC, ReactElement, memo, useMemo } from "react";
+import React, { FC, ReactElement, memo, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import ExecutionMinimal from "./execution-minimal";
 import VisualFlowConstants from "../../../../constants/visual-flow-constants";
 import useAuthenticationFlowBuilderCore from "../../../../hooks/use-authentication-flow-builder-core-context";
 import useValidationStatus from "../../../../hooks/use-validation-status";
+import { EventTypes } from "../../../../models/extension";
 import { ExecutionTypes, Step } from "../../../../models/steps";
+import PluginRegistry from "../../../../plugins/plugin-registry";
 import { ValidationErrorBoundary } from "../../../validation-panel/validation-error-boundary";
 import { CommonStepFactoryPropsInterface } from "../common-step-factory";
 import View from "../view/view";
@@ -65,6 +67,13 @@ const Execution: FC<ExecutionPropsInterface> = memo(({
             data
         }) as Step;
     }, [ data, resource ]);
+
+    /**
+     * Effect to trigger execution node change event.
+     */
+    useEffect(() => {
+        PluginRegistry.getInstance().executeSync(EventTypes.ON_EXECUTION_NODE_CHANGE, fullResource);
+    }, [ fullResource ]);
 
     /**
      * Resolves the execution name based on the type.
