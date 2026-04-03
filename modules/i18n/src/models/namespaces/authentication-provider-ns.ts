@@ -944,6 +944,11 @@ export interface AuthenticationProviderNS {
                 label: string;
                 placeholder: string;
             };
+            homeRealmIdentifier: {
+                hint: string;
+                label: string;
+                placeholder: string;
+            };
             image: {
                 hint: string;
                 label: string;

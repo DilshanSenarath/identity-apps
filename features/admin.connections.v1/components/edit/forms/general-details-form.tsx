@@ -22,10 +22,10 @@ import { identityProviderConfig } from "@wso2is/admin.extensions.v1";
 import { TestableComponentInterface } from "@wso2is/core/models";
 import { ImageUtils } from "@wso2is/core/utils";
 import { Field, Form } from "@wso2is/form";
-import { EmphasizedSegment } from "@wso2is/react-components";
+import { Code, EmphasizedSegment } from "@wso2is/react-components";
 import { FormValidation } from "@wso2is/validation";
 import React, { FunctionComponent, ReactElement, useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Divider } from "semantic-ui-react";
 import { CommonAuthenticatorConstants } from "../../../constants/common-authenticator-constants";
@@ -231,6 +231,7 @@ export const GeneralDetailsForm: FunctionComponent<GeneralDetailsFormPopsInterfa
         onSubmit({
             alias: values.alias?.toString(),
             description: values.description?.toString(),
+            homeRealmIdentifier: values.homeRealmIdentifier?.toString(),
             idpIssuerName: values.idpIssuerName?.toString(),
             image: values.image?.toString(),
             isPrimary: !!values.isPrimary,
@@ -426,6 +427,40 @@ export const GeneralDetailsForm: FunctionComponent<GeneralDetailsFormPopsInterfa
                             "generalDetails.description.hint") }
                         readOnly={ isReadOnly }
                     />
+                    { identityProviderConfig?.editIdentityProvider?.showHomeRealmIdentifierField
+                        && templateType !== CommonAuthenticatorConstants.CONNECTION_TEMPLATE_IDS.TRUSTED_TOKEN_ISSUER
+                        && !isIDPOrganizationSSO() && !isIDPIproov()
+                        && !isOutboundProvisioningConnection
+                        && (
+                            <Field.Input
+                                ariaLabel="homeRealmIdentifier"
+                                inputType="default"
+                                name="homeRealmIdentifier"
+                                label={ t("authenticationProvider:forms." +
+                                    "generalDetails.homeRealmIdentifier.label") }
+                                required={ false }
+                                placeholder={ t("authenticationProvider:forms." +
+                                    "generalDetails.homeRealmIdentifier.placeholder") }
+                                value={ editingIDP?.homeRealmIdentifier }
+                                data-testid={ `${ testId }-home-realm-identifier` }
+                                maxLength={ ConnectionUIConstants.IDP_NAME_LENGTH.max }
+                                minLength={ ConnectionUIConstants.IDP_NAME_LENGTH.min }
+                                hint={ (
+                                    <Trans
+                                        i18nKey={
+                                            "authenticationProvider:forms." +
+                                            "generalDetails.homeRealmIdentifier.hint"
+                                        }
+                                    >
+                                        An identifier for this connection that applications can use as
+                                        the <Code>fidp</Code> query parameter to redirect users directly
+                                        to this connection, bypassing the login page in a multi-option
+                                        scenario.
+                                    </Trans>
+                                ) }
+                                readOnly={ isReadOnly }
+                            />
+                        ) }
                     { !hideIdPLogoEditField && !isOutboundProvisioningConnection && (
                         <Field.Input
                             name="image"

@@ -183,6 +183,7 @@ export const identityProviderConfig: IdentityProviderConfig = {
             return undefined;
         },
         showAdvancedSettings: true,
+        showHomeRealmIdentifierField: false,
         showIssuerSettings: true,
         showJitProvisioning: true,
         showOutboundProvisioning: true

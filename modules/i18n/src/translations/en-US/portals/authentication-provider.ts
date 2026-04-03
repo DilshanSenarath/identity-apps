@@ -972,6 +972,13 @@ export const authenticationProvider:AuthenticationProviderNS = {
                 label: "Description",
                 placeholder: "Enter a description of the connection."
             },
+            homeRealmIdentifier: {
+                hint: "A unique identifier for this connection that applications can use as the " +
+                    "<1>fidp</1> query parameter to redirect users directly to this connection, " +
+                    "bypassing the login page in a multi-option scenario.",
+                label: "Identifier for direct login",
+                placeholder: "Enter an identifier for direct login."
+            },
             image: {
                 hint: "A URL for the image of the connection for display purposes. If not provided" +
                     " a generated thumbnail will be displayed. Recommended size is 200x200 pixels.",
