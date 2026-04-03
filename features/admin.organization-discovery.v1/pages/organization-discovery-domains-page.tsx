@@ -21,6 +21,7 @@ import { useRequiredScopes } from "@wso2is/access-control";
 import { AppConstants } from "@wso2is/admin.core.v1/constants/app-constants";
 import { UIConstants } from "@wso2is/admin.core.v1/constants/ui-constants";
 import { history } from "@wso2is/admin.core.v1/helpers/history";
+import useEnableLegacyFlows, { LegacyFlowType } from "@wso2is/admin.core.v1/hooks/use-enable-legacy-flows";
 import { FeatureConfigInterface } from "@wso2is/admin.core.v1/models/config";
 import { AppState } from "@wso2is/admin.core.v1/store";
 import {
@@ -93,6 +94,7 @@ const OrganizationDiscoveryDomainsPage: FunctionComponent<OrganizationDiscoveryD
     const hasDeleteScopes: boolean = useRequiredScopes(featureConfig?.organizationDiscovery?.scopes?.delete);
     // To preserve backward compatibility with old console roles.
     const isReadOnly: boolean = !hasUpdateScopes && !(hasCreateScopes && hasDeleteScopes);
+    const isLegacySelfRegistrationEnabled: boolean = useEnableLegacyFlows(LegacyFlowType.SELF_REGISTRATION);
 
     const [ searchQuery, setSearchQuery ] = useState<string>("");
     const [ listItemLimit, setListItemLimit ] = useState<number>(UIConstants.DEFAULT_RESOURCE_LIST_ITEM_LIMIT);
@@ -480,18 +482,26 @@ const OrganizationDiscoveryDomainsPage: FunctionComponent<OrganizationDiscoveryD
                                             <Link
                                                 external={ false }
                                                 onClick={ () => {
-                                                    history.push(
-                                                        AppConstants.getPaths().get(
-                                                            "GOVERNANCE_CONNECTOR_EDIT").replace(
-                                                            ":categoryId",
-                                                            ServerConfigurationsConstants.
-                                                                USER_ONBOARDING_CONNECTOR_ID
-                                                        ).replace(
-                                                            ":connectorId",
-                                                            ServerConfigurationsConstants.
-                                                                SELF_SIGN_UP_CONNECTOR_ID
-                                                        )
-                                                    );
+                                                    if (isLegacySelfRegistrationEnabled) {
+                                                        history.push(
+                                                            AppConstants.getPaths().get(
+                                                                "GOVERNANCE_CONNECTOR_EDIT").replace(
+                                                                ":categoryId",
+                                                                ServerConfigurationsConstants.
+                                                                    USER_ONBOARDING_CONNECTOR_ID
+                                                            ).replace(
+                                                                ":connectorId",
+                                                                ServerConfigurationsConstants.
+                                                                    SELF_SIGN_UP_CONNECTOR_ID
+                                                            )
+                                                        );
+                                                    } else {
+                                                        history.push(
+                                                            AppConstants.getPaths().get(
+                                                                "REGISTRATION_FLOW_BUILDER"
+                                                            )
+                                                        );
+                                                    }
                                                 } }
                                             >self-registration
                                             </Link>
