@@ -29,7 +29,6 @@ export interface ExtendedSamlConfigInterface {
 export interface IdentityProviderConfig {
     editIdentityProvider: {
         showAdvancedSettings: boolean;
-        showHomeRealmIdentifierField: boolean;
         showIssuerSettings: boolean;
         showJitProvisioning: boolean;
         showOutboundProvisioning: boolean;
@@ -82,6 +81,10 @@ export interface IdentityProviderConfig {
         };
         userstoreDomainField: {
             show: boolean;
+        };
+        homeRealmIdentifierField: {
+            show: boolean;
+            excludedTemplateIds?: string[];
         };
     };
     utils: {

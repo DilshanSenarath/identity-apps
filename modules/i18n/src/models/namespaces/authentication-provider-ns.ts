@@ -944,11 +944,6 @@ export interface AuthenticationProviderNS {
                 label: string;
                 placeholder: string;
             };
-            homeRealmIdentifier: {
-                hint: string;
-                label: string;
-                placeholder: string;
-            };
             image: {
                 hint: string;
                 label: string;
@@ -1038,6 +1033,11 @@ export interface AuthenticationProviderNS {
                     mergeWithExisting: string;
                     overrideAll: string;
                 };
+            };
+            homeRealmIdentifier: {
+                hint: string;
+                label: string;
+                placeholder: string;
             };
         };
         roleMapping: {
@@ -2015,6 +2015,16 @@ export interface AuthenticationProviderNS {
                 message: string;
                 description: string;
             };
+            genericError: {
+                message: string;
+                description: string;
+            };
+            success: {
+                message: string;
+                description: string;
+            };
+        };
+        updateHomeRealmIdentifier: {
             genericError: {
                 message: string;
                 description: string;

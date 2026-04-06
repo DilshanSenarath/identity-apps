@@ -775,10 +775,6 @@ export interface GeneralDetailsFormValuesInterface {
      */
     description: string;
     /**
-     * Home realm identifier for direct login routing
-     */
-    homeRealmIdentifier: string;
-    /**
      * Issuer of the connection
      */
     idpIssuerName: string;
