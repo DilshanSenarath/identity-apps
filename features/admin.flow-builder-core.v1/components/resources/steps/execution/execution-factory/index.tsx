@@ -121,6 +121,20 @@ const ExecutionFactory: FC<ExecutionFactoryPropsInterface> = ({
         );
     }
 
+    if ((resource.data?.action as any)?.executor?.name === ExecutionTypes.DaonExecutor) {
+        return (
+            <Box
+                display="flex"
+                gap={ 1 }
+                data-componentid={ componentId }
+                className="flow-builder-execution daon"
+            >
+                <img src="https://www.svgrepo.com/show/532366/user-check.svg" height="20"/>
+                <Typography variant="body1">{ t("flows:core.executions.names.daon") }</Typography>
+            </Box>
+        );
+    }
+
     return (
         <Box display="flex" gap={ 1 } data-componentid={ componentId }>
             <Typography variant="body1">{ t("flows:core.executions.names.default") }</Typography>

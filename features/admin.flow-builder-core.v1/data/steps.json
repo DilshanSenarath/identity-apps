@@ -217,6 +217,28 @@
     },
     {
         "resourceType": "STEP",
+        "category": "WORKFLOW",
+        "type": "EXECUTION",
+        "version": "0.1.0",
+        "deprecated": false,
+        "display": {
+            "label": "Identity Verification View",
+            "image": "assets/images/icons/user-check.svg",
+            "showOnResourcePanel": true
+        },
+        "config": {},
+        "data": {
+            "action": {
+                "type": "EXECUTOR",
+                "executor": {
+                    "name": "DaonExecutor"
+                },
+                "next": ""
+            }
+        }
+    },
+    {
+        "resourceType": "STEP",
         "category": "INTERFACE",
         "type": "END",
         "version": "0.1.0",
